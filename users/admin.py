@@ -5,5 +5,5 @@ from django.contrib.auth.admin import UserAdmin
 CustomUser = get_user_model()
 
 @admin.register(CustomUser)
-class CustomUserAdmin(CustomAdmin):
+class CustomUserAdmin(UserAdmin):
     model = CustomUser
