@@ -44,10 +44,13 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'crispy_forms',
 
     # Local Apps
     'users.apps.UsersConfig',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 SITE_ID = 1
 
@@ -66,7 +69,7 @@ ROOT_URLCONF = 'play2learn.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -144,6 +147,7 @@ ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5 # Default: 5
 ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300 # Default 300
 ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login' # Default: '/'
 ACCOUNT_USERNAME_REQUIRED = False # Default: True
+ACCOUNT_SIGNUP_FORM_CLASS = 'users.forms.SignupForm'
 
 
 # Internationalization
@@ -162,6 +166,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 STATIC_URL = '/static/'
 
