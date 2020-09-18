@@ -21,7 +21,7 @@ class GameScore(models.Model):
     game_id = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='game_scores'
     )
-    score = models.PositiveIntegerField
+    score = models.PositiveIntegerField()
     created = models.DateTimeField(auto_now_add=True)
 
 class GameScoreParameters(models.Model):
@@ -34,3 +34,6 @@ class GameScoreParameters(models.Model):
         related_name='game_score_parameters'
     )
     value = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name_plural = 'Game score parameters'
