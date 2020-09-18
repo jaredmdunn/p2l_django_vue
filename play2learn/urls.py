@@ -20,10 +20,11 @@ urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
     
-    
     # Pages
     path('', include('pages.urls')),
 
+    # Games
+    path('games/', include('games.urls')),
 
     # User management
     path('account/', include('users.urls')),
