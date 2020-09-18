@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     # Local Apps
     'users.apps.UsersConfig',
+    'games.apps.GamesConfig',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
