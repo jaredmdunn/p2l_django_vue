@@ -41,7 +41,8 @@
                 Me
               </a>
               <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="me">
-                <li><a class="dropdown-item" href="{% url 'users:my-account'">My Account</a></li>
+                <li><a class="dropdown-item" href="{% url 'users:my-account' %}">My Account</a></li>
+                <li><a class="dropdown-item" href="{% url 'users:create-review' %}">Leave a Review</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <form method="post" action="{% url 'account_logout' %}" class="d-flex">
