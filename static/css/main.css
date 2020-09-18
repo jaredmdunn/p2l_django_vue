@@ -3,8 +3,17 @@ label {
   font-variant: small-caps;
 }
 
-.form-check {
-  display: inline-block;
-  font-weight: normal;
-  margin: 0 1rem;
+input,
+button {
+  margin: 0.5rem 0;
+}
+
+/* FOOTER STYLES */
+footer a.btn-outline-dark {
+  border-style: none;
+  padding: 0.5em 0.8em;
+}
+
+footer a i {
+  font-size: 1.5rem;
 }
