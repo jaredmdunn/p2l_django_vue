@@ -1,0 +1,66 @@
+{% load static %}
+<script src="{% static 'js/math_facts.js' %}"></script>
+<section id="start" class="container">
+  <div class="m-auto text-center">
+    <label for="operation">Operation:</label>
+    <select id="operation">
+      <option value="addition">Addition</option>
+      <option value="subtraction">Subtraction</option>
+      <option value="multiplication">Multiplication</option>
+      <option value="division">Division</option>
+    </select>
+    <label for="max-num">Max Number:</label>
+    <input id="max-num" type="number" min="1" max="100" value="20">
+    <button id="btn-go" class="btn btn-success py-1">Go</button>
+  </div>
+  <ol id="directions" class="mx-auto col-md-6">
+    <li>Select operation.</li>
+    <li>Press <samp>Go</samp>.</li>
+    <li>How many problems can you solve in <span id="playtime">30</span> seconds?</li>
+  </ol>
+</section>
+<section id="play" class="container">
+  <div class="m-auto text-center col">
+    <h2 id="operation-display"></h2>
+    <h3 id="problem" class="display-6"></h3>
+    <input id="solution">
+  </div>
+  <div id="number-pad" class="m-auto col-6">
+    <div class="row">
+      <button class="col-3 btn btn-success ml-auto button">1</button>
+      <button class="col-3 btn btn-success mx-1 button">2</button>
+      <button class="col-3 btn btn-success mr-auto button">3</button>
+    </div>
+    <div class="row">
+      <button class="col-3 btn btn-success ml-auto button">4</button>
+      <button class="col-3 btn btn-success mx-1 button">5</button>
+      <button class="col-3 btn btn-success mr-auto button">6</button>
+    </div>
+    <div class="row">
+      <button class="col-3 btn btn-success ml-auto button">7</button>
+      <button class="col-3 btn btn-success mx-1 button">8</button>
+      <button class="col-3 btn btn-success mr-auto button">9</button>
+    </div>
+    <div class="row">
+      <button class="col-3 btn btn-success ml-auto mr-1 button">0</button>
+      <button class="col-6 btn btn-success button mr-auto" id="clear">CLEAR</button>
+    </div>
+  </div>
+  <div id="scoreboard" class="m-auto text-center">
+    <strong>Score:</strong>
+    <output>0</output>
+  </div>
+  <div id="time-left" class="m-auto text-center">
+    <strong>Time Left:</strong>
+    <output>30</output>
+    seconds
+  </div>
+  <div id="result" class="m-auto text-center" >
+    <h3>Time's up!</h3>
+    {% csrf_token %}
+    <p>Your final score is:</p>
+    <output id="final-score" class="display-6 d-block">5</output>
+    <button id="btn-play-again" class="btn btn-success">Play Again</button>
+    <output id="score-saved-msg" class="d-block"></output>
+  </div>
+</section>

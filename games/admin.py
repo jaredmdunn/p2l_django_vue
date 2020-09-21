@@ -6,6 +6,11 @@ class GameAdmin(admin.ModelAdmin):
     model = Game
     list_display = ['game']
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return('slug',)
+        return ()
+
 @admin.register(Parameter)
 class ParameterAdmin(admin.ModelAdmin):
     model = Parameter

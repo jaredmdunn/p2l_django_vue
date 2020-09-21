@@ -17,3 +17,12 @@ footer a.btn-outline-dark {
 footer a i {
   font-size: 1.5rem;
 }
+
+/* GAMES STYLES */
+#solution,
+#number-pad,
+#scoreboard,
+#time-left,
+#result {
+  display: none;
+}

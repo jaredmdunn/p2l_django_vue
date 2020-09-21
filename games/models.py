@@ -1,17 +1,33 @@
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
+
+from common.utils.text import unique_slug
 
 class Game(models.Model):
     game = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=50, unique=True, null=False, editable=False)
 
+    def get_absolute_url(self):
+        return reverse('jokes:detail', args=[self.slug])
+    
     def __str__(self): 
         return self.game
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            value = str(self)
+            self.slug = unique_slug(value, type(self))
+        super().save(*args, **kwargs)
 
 class Parameter(models.Model):
     parameter = models.CharField(max_length=100)
     game_id = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='parameters'
     )
+
+    def __str__(self): 
+        return self.parameter
 
 class GameScore(models.Model):
     user_id = models.ForeignKey(
@@ -23,6 +39,14 @@ class GameScore(models.Model):
     )
     score = models.PositiveIntegerField()
     created = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def is_high_score(self):
+        pass
+
+    @property
+    def is_user_high_score(self):
+        pass
 
 class GameScoreParameters(models.Model):
     gamescore_id = models.ForeignKey(

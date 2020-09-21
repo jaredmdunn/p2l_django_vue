@@ -1,0 +1,30 @@
+{% extends '_base.html' %}
+{% load common_filters %}
+{% load static %}
+
+{% block scripts %}
+  <script>
+    const ajaxURL = "{% url 'games:save-score' game.slug %}";
+    const isAuthenticated = {{ user.is_authenticated|lower }};
+  </script>
+{% endblock %}
+{% block title %}{{ game.game }}{% endblock %}
+
+{% block main %}
+  <div class="card m-auto col col-md-9 col-lg-6">
+    <h1 class="card-header text-center">{{ game.game }}</h1>
+    <div class="card-body">
+      {% if user.is_anonymous %}
+        <p class="mx-auto text-center">Only logged in users can play games.</p>
+      {% else %}
+        {% with game_template='games/'|add:game.slug|add:'.html' %}
+          {% if game_template|template_exists %}
+            {% include game_template %}
+          {% else %}
+            <p class="mx-auto text-center">This game is currently under construction. Please try again later.</p>
+          {% endif %}
+        {% endwith %}
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
