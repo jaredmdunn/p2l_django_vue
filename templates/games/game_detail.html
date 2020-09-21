@@ -17,14 +17,63 @@
       {% if user.is_anonymous %}
         <p class="mx-auto text-center">Only logged in users can play games.</p>
       {% else %}
-        
-        {% with game_template='games/'|add:game.slug|add:'.html' %}
-          {% if game_template|template_exists %}
-            {% include game_template %}
-          {% else %}
-            <p class="mx-auto text-center">This game is currently under construction. Please try again later.</p>
-          {% endif %}
-        {% endwith %}
+        <div id="start">
+          <!-- Parameter selection -->
+          {% for param in game.parameters %}
+            <label for="{{ param.slug }}">{{ param.parameter }}</label>
+            {% with values=param.get_values %}
+              {% if param.input_type == 'select' %}
+                <select id="{{ param.slug }}">
+                  {% for key, value in values %}
+                    <option value="{{ key }}"
+                      {% if value == param.default_value %}
+                        selected
+                      {% endif %}>{{ value }}</option>
+                  {% endfor %}
+                </select>
+              {% elif param.input_type == 'number' %}
+                <input type="number" id="{{ param.slug }}" max="{{ values.max }}" 
+                  min="{{ values.min }}" value="{{ param.default_value }}">
+              {% endif %}
+            {% endwith %}
+          {% endfor %}
+          <button id="btn-go" class="btn btn-success py-1">Go</button>
+          <!-- Directions -->
+          <ol id="directions">
+            {% for param in game.parameters %}
+              <li>Choose {{ param.parameter }}</li>
+            {% endfor %}
+            <li>Press <samp>Go</samp>.</li>
+            <li>How many problems can you solve in <span id="playtime">30</span> seconds.</li>
+          </ol>
+        </div>
+        <div id="play">
+          <!-- Specific game html -->
+          {% with game_template='games/'|add:game.slug|add:'.html' %}
+            {% if game_template|template_exists %}
+              {% include game_template %}
+            {% else %}
+              <p class="mx-auto text-center">This game is currently under construction. Please try again later.</p>
+            {% endif %}
+          {% endwith %}
+          <!-- score -->
+          <div id="scoreboard" class="m-auto text-center">
+            <strong>Score:</strong>
+            <output>0</output>
+          </div>
+          <!-- timer -->
+          <div id="time-left" class="m-auto text-center">
+            <strong>Time Left:</strong>
+            <output></output>
+          </div>
+        </div>
+        <div id="result" class="m-auto text-center">
+          <h3>Time's up!</h3>
+          {% csrf_token %}
+          <p>Your final score is:</p>
+          <output id="final-score" class="display-6 d-block"></output>
+          <button id="btn-play-again" class="btn btn-success"></button>
+        </div>
       {% endif %}
     </div>
   </div>

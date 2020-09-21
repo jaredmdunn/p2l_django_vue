@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -13,7 +15,7 @@ class Game(models.Model):
         pass
 
     def get_absolute_url(self):
-        return reverse('jokes:detail', args=[self.slug])
+        return reverse('games:game', args=[self.slug])
     
     def __str__(self): 
         return self.game
@@ -37,6 +39,10 @@ class Parameter(models.Model):
     input_type = models.CharField(max_length=50, choices=INPUT_TYPES)
     default_value = models.CharField(max_length=100)
     values = models.JSONField()
+
+    @property
+    def get_values(self):
+        return json.load(values)
 
     def __str__(self): 
         return self.parameter

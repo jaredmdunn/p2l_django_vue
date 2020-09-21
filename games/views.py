@@ -10,6 +10,13 @@ from .models import Game, GameScore, GameScoreParameters, Parameter
 class GameDetailView(DetailView):
     model = Game
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['']
+
+        return context
+
 
 @login_required
 def save_score(request, slug):
