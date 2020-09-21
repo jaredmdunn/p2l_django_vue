@@ -4,7 +4,6 @@ import string
 from django.utils.text import slugify
 
 def unique_slug(s, model, num_chars=50):
-    
     """
     Return slug of num_chars length unique to model
     

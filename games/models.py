@@ -25,9 +25,17 @@ class Parameter(models.Model):
     game_id = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='parameters'
     )
+    slug = models.SlugField(max_length=50, unique=True, null=False, editable=False)
+    values = models.JSONField()
 
     def __str__(self): 
         return self.parameter
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            value = str(self)
+            self.slug = unique_slug(value, type(self))
+        super().save(*args, **kwargs)
 
 class GameScore(models.Model):
     user_id = models.ForeignKey(

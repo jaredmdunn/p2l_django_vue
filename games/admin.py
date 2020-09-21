@@ -14,7 +14,7 @@ class GameAdmin(admin.ModelAdmin):
 @admin.register(Parameter)
 class ParameterAdmin(admin.ModelAdmin):
     model = Parameter
-    list_display = ['parameter','game_id']
+    list_display = ['parameter','slug','game_id', 'values']
 
 @admin.register(GameScore)
 class GameScoreAdmin(admin.ModelAdmin):
