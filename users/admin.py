@@ -12,3 +12,4 @@ class CustomUserAdmin(UserAdmin):
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     model = Review
+    list_display = ['user', 'review', 'created', 'featured']

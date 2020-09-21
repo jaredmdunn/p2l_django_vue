@@ -1,4 +1,5 @@
 from games.models import Game
+from user.models import Review
 from django import template
 
 register = template.Library()
@@ -7,3 +8,8 @@ register = template.Library()
 def show_game_links():
     games = Game.objects.all()
     return {'games': games}
+
+@register.inclusion_tag('common/featured_reviews.html')
+def show_featured_reviews():
+    featured_reviews = Review.objects.filter(featured=True).order_by('created')
+    return {'featured_reviews': featured_reviews}

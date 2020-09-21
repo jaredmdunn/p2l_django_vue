@@ -13,6 +13,7 @@ class CustomUser(AbstractUser):
 
 class Review(models.Model):
     created = models.DateTimeField(auto_now_add=True)
+    featured = models.BooleanField(default=False)
     review = models.TextField(max_length=250)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews'
