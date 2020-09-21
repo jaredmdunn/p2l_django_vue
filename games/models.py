@@ -8,6 +8,10 @@ class Game(models.Model):
     game = models.CharField(max_length=100)
     slug = models.SlugField(max_length=50, unique=True, null=False, editable=False)
 
+    @property
+    def get_param_data(self):
+        pass
+
     def get_absolute_url(self):
         return reverse('jokes:detail', args=[self.slug])
     
@@ -21,11 +25,17 @@ class Game(models.Model):
         super().save(*args, **kwargs)
 
 class Parameter(models.Model):
+    INPUT_TYPES = (
+        ('select', 'select'),
+        ('number', 'number'),
+    )
     parameter = models.CharField(max_length=100)
     game_id = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='parameters'
     )
     slug = models.SlugField(max_length=50, unique=True, null=False, editable=False)
+    input_type = models.CharField(max_length=50, choices=INPUT_TYPES)
+    default_value = models.CharField(max_length=100)
     values = models.JSONField()
 
     def __str__(self): 

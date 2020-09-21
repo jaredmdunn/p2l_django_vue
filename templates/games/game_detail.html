@@ -17,6 +17,7 @@
       {% if user.is_anonymous %}
         <p class="mx-auto text-center">Only logged in users can play games.</p>
       {% else %}
+        
         {% with game_template='games/'|add:game.slug|add:'.html' %}
           {% if game_template|template_exists %}
             {% include game_template %}
