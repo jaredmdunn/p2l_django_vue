@@ -10,10 +10,6 @@ class Game(models.Model):
     game = models.CharField(max_length=100)
     slug = models.SlugField(max_length=50, unique=True, null=False, editable=False)
 
-    @property
-    def get_param_data(self):
-        pass
-
     def get_absolute_url(self):
         return reverse('games:game', args=[self.slug])
     
@@ -42,7 +38,8 @@ class Parameter(models.Model):
 
     @property
     def get_values(self):
-        return json.load(values)
+        return json.dumps(self.values)
+    
 
     def __str__(self): 
         return self.parameter
