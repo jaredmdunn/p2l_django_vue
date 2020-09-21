@@ -22,4 +22,4 @@ class Review(models.Model):
         return(reverse('pages:homepage'))
 
     def __str__(self):
-        return self.review
+        return '"' + self.review + '"\n- ' + str(self.user)
