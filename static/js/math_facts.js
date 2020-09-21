@@ -75,7 +75,7 @@ window.addEventListener("load", (e) => {
   const finalScore = document.getElementById("final-score");
   const playAgain = document.getElementById("btn-play-again");
 
-  const PLAYTIME = 5;
+  const PLAYTIME = 50;
   playTimeSpan.innerHTML = PLAYTIME;
 
   let operation = operationSelect.value;
@@ -119,6 +119,7 @@ window.addEventListener("load", (e) => {
     scoreboard.style.display = "block";
     timeLeftDiv.style.display = "block";
     resultDiv.style.display = "none";
+    scoreOutput.innerHTML = "0";
   }
 
   start();
@@ -166,7 +167,7 @@ window.addEventListener("load", (e) => {
 
     solutionInput.addEventListener("input", (e) => {
       if (Number(solutionInput.value) === problem.a) {
-        problem = generateProblem(operation);
+        problem = generateProblem(operation, maxNum);
         problemDisplay.innerHTML = problem.q;
         solutionInput.value = "";
         scoreOutput.innerHTML = String(Number(scoreOutput.innerHTML) + 1);
