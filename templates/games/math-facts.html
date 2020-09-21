@@ -1,5 +1,10 @@
 {% load static %}
 <script src="{% static 'js/math_facts.js' %}"></script>
+<!-- 
+  Start section 
+    selecting game settings
+    and directions
+-->
 <section id="start" class="container">
   <div class="m-auto text-center">
     <label for="operation">Operation:</label>
@@ -19,6 +24,10 @@
     <li>How many problems can you solve in <span id="playtime">30</span> seconds?</li>
   </ol>
 </section>
+<!-- 
+  Play section 
+    after the user clicks Go
+-->
 <section id="play" class="container">
   <div class="m-auto text-center col">
     <h2 id="operation-display"></h2>
