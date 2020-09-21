@@ -1,0 +1,3 @@
+{% for game in games %}
+  <li><a class="dropdown-item" href="{% url 'games:game' game.slug %}">{{ game.game }}</a></li>
+{% endfor %}
