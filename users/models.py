@@ -24,4 +24,5 @@ class Review(models.Model):
         return reverse('pages:homepage')
 
     def __str__(self):
-        return '"' + self.review + '"\n- ' + str(self.user)
+        username = 'Anonymous' if self.anonymous else str(self.user)
+        return '"' + self.review + '"\n- ' + username
