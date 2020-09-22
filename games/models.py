@@ -36,11 +36,6 @@ class Parameter(models.Model):
     default_value = models.CharField(max_length=100)
     values = models.JSONField()
 
-    @property
-    def get_values(self):
-        return json.dumps(self.values)
-    
-
     def __str__(self): 
         return self.parameter
 

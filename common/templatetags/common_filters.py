@@ -1,4 +1,5 @@
 from django import template
+from django.contrib.staticfiles import finders
 from django.template.defaultfilters import stringfilter
 
 register = template.Library()
@@ -11,3 +12,11 @@ def template_exists(value):
         return True
     except template.TemplateDoesNotExist:
         return False
+
+@register.filter
+@stringfilter
+def static_file_exists(value):
+    if finders.find(value) is None:
+        return False
+    else:
+        return True

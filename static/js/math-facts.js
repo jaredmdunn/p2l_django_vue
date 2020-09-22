@@ -51,16 +51,19 @@ function saveScore(operation, maxNum, score) {
   })
     .then(response => response.json())
     .then(data => {
-      document.getElementById("score-saved-msg").value = data.msg;
+      document.getElementById("ajax-msg").value = data.msg;
     });
 }
 
 window.addEventListener("load", (e) => {
+  // Start section elements
   const startSection = document.getElementById("start");
-  const playTimeSpan = document.getElementById("playtime");
   const operationSelect = document.getElementById("operation");
-  const maxNumInput = document.getElementById("max-num");
+  const maxNumInput = document.getElementById("max-number");
   const go = document.getElementById("btn-go");
+  const playTimeSpan = document.getElementById("playtime");
+
+  // Play section elements
   const playSection = document.getElementById("play");
   const operationDisplay = document.getElementById("operation-display");
   const problemDisplay = document.getElementById("problem");
@@ -71,6 +74,8 @@ window.addEventListener("load", (e) => {
   const scoreOutput = document.querySelector("#scoreboard output");
   const timeLeftDiv = document.getElementById("time-left");
   const timeLeft = document.querySelector("#time-left output");
+
+  // Result section elements
   const resultDiv = document.getElementById("result");
   const finalScore = document.getElementById("final-score");
   const playAgain = document.getElementById("btn-play-again");

@@ -7,6 +7,9 @@
     const ajaxURL = "{% url 'games:save-score' game.slug %}";
     const isAuthenticated = {{ user.is_authenticated|lower }};
   </script>
+    {% with game_js='js/'|add:game.slug|add:'.js' %}
+      <script src="{% static game_js %}"></script>
+    {% endwith %}
 {% endblock %}
 {% block title %}{{ game.game }}{% endblock %}
 
@@ -20,10 +23,10 @@
         <div id="start">
           <!-- Parameter selection -->
           {% for param in game.parameters.all %}
-            <label for="{{ param.slug }}">{{ param.parameter }}</label>
-            {% with values=param.get_values %}
+            <label for="{{ param.slug }}" class="col-4">{{ param.parameter }}</label>
+            {% with values=param.values %}
               {% if param.input_type == 'select' %}
-                <select id="{{ param.slug }}">
+                <select id="{{ param.slug }}" class="col-6">
                   {% for key, value in values.items %}
                     <option value="{{ key }}"
                       {% if value == param.default_value %}
@@ -36,7 +39,7 @@
                   {% for key, value in values.items %}
                     {{ key }}="{{ value }}" 
                   {% endfor %} 
-                  value="{{ param.default_value }}">
+                  value="{{ param.default_value }}" class="col-6">
               {% endif %}
             {% endwith %}
           {% endfor %}
@@ -44,10 +47,10 @@
           <!-- Directions -->
           <ol id="directions">
             {% for param in game.parameters.all %}
-              <li>Choose {{ param.parameter }}</li>
+              <li>Choose {{ param.parameter }}.</li>
             {% endfor %}
             <li>Press <samp>Go</samp>.</li>
-            <li>How many problems can you solve in <span id="playtime">30</span> seconds.</li>
+            <li>How many problems can you solve in <span id="playtime">30</span> seconds?</li>
           </ol>
         </div>
         <div id="play">
@@ -75,7 +78,8 @@
           {% csrf_token %}
           <p>Your final score is:</p>
           <output id="final-score" class="display-6 d-block"></output>
-          <button id="btn-play-again" class="btn btn-success"></button>
+          <button id="btn-play-again" class="btn btn-success">Play again</button>
+          <output id="ajax-msg"></output>
         </div>
       {% endif %}
     </div>
