@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'common.apps.CommonConfig',
     'users.apps.UsersConfig',
     'games.apps.GamesConfig',
+    'users.apps.UsersConfig',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

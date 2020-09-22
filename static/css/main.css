@@ -30,3 +30,12 @@ footer a i {
 #featured-reviews {
   width: 35rem;
 }
+
+/* GAMES STYLES */
+#solution,
+#number-pad,
+#scoreboard,
+#time-left,
+#result {
+  display: none;
+}
