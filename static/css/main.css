@@ -20,9 +20,13 @@ footer a i {
 
 /* CAROUSEL STYLES */
 .review-item {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 
-.carousel-inner {
+.review-inner {
   height: 13rem;
+}
+
+#featured-reviews {
+  width: 35rem;
 }
