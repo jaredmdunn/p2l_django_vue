@@ -47,8 +47,9 @@ INSTALLED_APPS = [
     'crispy_forms',
 
     # Local Apps
-    'users.apps.UsersConfig',
+    'common.apps.CommonConfig',
     'games.apps.GamesConfig',
+    'users.apps.UsersConfig',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
