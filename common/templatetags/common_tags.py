@@ -7,3 +7,8 @@ register = template.Library()
 def show_game_links():
     games = Game.objects.all()
     return {'games': games}
+
+@register.inclusion_tag('common/game_scores.html')
+def show_game_scores(game):
+    game_params = game.parameters
+    return {'game_params': game_params}

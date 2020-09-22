@@ -1,0 +1,24 @@
+<div>
+  <form>
+    {% for param in game_params %}
+      <label for="{{ param.slug }}">
+        {% if param.input_type == 'select' %}
+          <select name="{{ param.slug }}" id="{{ param.slug }}">
+            {% for key, value in param.values.items %}
+              <option value="{{ key }}"
+                {% if value == param.default.value %}
+                  selected
+                {% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
+        {% elif param.input_type == 'number' %}
+          <input type="number" name="{{ param.slug }}" id="{{ param.slug }}"
+            {% for key, value in values.items %}
+              {{ key}}="{{ value }}"
+            {% endfor %}
+            value="{{ param.default_value }}">
+        {% endif %}
+      </label>
+    {% endfor %}
+  </form>
+</div>

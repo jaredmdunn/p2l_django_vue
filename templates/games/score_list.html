@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+{% load common_tags %}
+
+{% block main %}
+  <ul class="nav nav-tabs">
+    {% for game in object_list %}
+      <li class="nav-item">
+        <a class="nav-link
+          {% if active_game.game == game.game %}
+            active
+          {% endif %}" href="{{ game.slug }}">{{ game.game }}</a>  
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% show_games_scores active_game %}
+  
+{% endblock %}
