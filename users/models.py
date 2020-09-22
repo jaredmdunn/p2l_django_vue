@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
         return reverse('my-account')
 
 class Review(models.Model):
+    anonymous = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     featured = models.BooleanField(default=False)
     review = models.TextField(max_length=250)

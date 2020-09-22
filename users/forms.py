@@ -38,15 +38,16 @@ class CustomUserChangeForm(UserChangeForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['review']
+        fields = ['review', 'anonymous']
         widgets = {
             'review': forms.Textarea(
-                attrs={'cols': 50, 'rows': 5, 'autofocus': True}
+                attrs={'cols': 50, 'rows': 5, 'autofocus': True, 'placeholder': 'Hello'}
             ) # cols may not do anything
         }
         labels = {
             'review': 'Leave a review!'
         }
-        help_text = {
-            'review': 'Hello'
+        help_texts = {
+            'anonymous': 'Check this if you don\'t want your username displayed',
         }
+

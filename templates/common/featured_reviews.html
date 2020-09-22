@@ -1,10 +1,10 @@
 <div class="row align-items-center" style="height: 10rem;">
-  <div id="carouselExampleControls" class="carousel slide mx-auto col-6" data-ride="carousel" data-interval="3000">
-    <div class="carousel-inner mx-auto row">
-      {% if user.reviews.all %}
+  <div id="featured-reviews" class="carousel slide mx-auto col-6" data-ride="carousel" data-interval="3000">
+    <div class="carousel-inner mx-auto row align-items-center">
+      {% if featured_reviews %}
         <!-- Display reviews -->
-        {% for review in user.reviews.all %}
-          {% if review == user.reviews.all.first %}
+        {% for review in featured_reviews %}
+          {% if review == featured_reviews.first %}
             <div class="carousel-item review-item active">
               <p class="text-center">{{ review|linebreaksbr }}</p>
             </div>
