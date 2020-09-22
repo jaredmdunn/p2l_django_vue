@@ -21,7 +21,7 @@ class MyAccountPageView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     def get_object(self):
         return self.request.user
 
-class ReviewCreateView(CreateView):
+class ReviewCreateView(CreateView, LoginRequiredMixin):
     model = Review
     form_class = ReviewForm
 

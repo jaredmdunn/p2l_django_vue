@@ -17,3 +17,12 @@ footer a.btn-outline-dark {
 footer a i {
   font-size: 1.5rem;
 }
+
+/* CAROUSEL STYLES */
+.review-item {
+  font-size: 1.5rem;
+}
+
+.carousel-inner {
+  height: 13rem;
+}

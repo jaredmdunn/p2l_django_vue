@@ -1,4 +1,4 @@
-<div class="row align-items-center" style="height: 10rem;">
+<div class="row align-items-center">
   <div id="featured-reviews" class="carousel slide mx-auto col-6" data-ride="carousel" data-interval="3000">
     <div class="carousel-inner mx-auto row align-items-center">
       {% if featured_reviews %}
@@ -17,11 +17,14 @@
       {% else %}
         <!-- No reviews yet -->
         <div class="carousel-item review-item active">
-          <p class="text-center">Be the first to leave a
+          <p class="text-center">
             {% if user.is_authenticated %}
+              Be the first to leave a
               <a href="{% url 'users:create-review' %}">review</a>!
             {% else %}
-              review!
+              <!-- Redirect to game once functionality is available -->
+              Create an <a href="{% url 'account_login' %}">account</a>, play some games,
+              and be the first to leave a review! 
             {% endif %}
           </p>
         </div>
