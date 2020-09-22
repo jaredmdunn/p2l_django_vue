@@ -59,17 +59,7 @@ class GameScore(models.Model):
 
     @property
     def is_high_score(self):
-        params_values = self.game_score_parameters.all()
-
-        params_values_dict = {}
-        for pv in params_values:
-            params_values_dict[pv.parameter_id] = pv.value
-
-        param_value_query = Q()
-        for key, value in params_values_dict.items():
-            param_value_query = param_value_query | Q(parameter_id=key, value=value)
-
-        game_score_params = GameScoreParameters.objects.filter(param_value_query)
+        game_score_params = self.get_game_score_params
         
         if GameScore.objects.filter(
             game_score_parameters__in=game_score_params, score__gt=self.score).exists():
@@ -79,17 +69,7 @@ class GameScore(models.Model):
 
     @property
     def is_user_high_score(self):
-        params_values = self.game_score_parameters.all()
-
-        params_values_dict = {}
-        for pv in params_values:
-            params_values_dict[pv.parameter_id] = pv.value
-
-        param_value_query = Q()
-        for key, value in params_values_dict.items():
-            param_value_query = param_value_query | Q(parameter_id=key, value=value)
-
-        game_score_params = GameScoreParameters.objects.filter(param_value_query)
+        game_score_params = self.get_game_score_params
 
         if GameScore.objects.filter(
             game_score_parameters__in=game_score_params, 
@@ -97,6 +77,18 @@ class GameScore(models.Model):
             return False
         else:
             return True
+
+    @property
+    def get_game_score_params(self):
+        params_values = self.game_score_parameters.all()
+
+        param_value_query = Q()
+
+        for pv in params_values:
+            param_value_query = param_value_query | Q(
+                parameter_id=pv.parameter_id, value=pv.value)
+
+        return GameScoreParameters.objects.filter(param_value_query)
 
 class GameScoreParameters(models.Model):
     gamescore_id = models.ForeignKey(
