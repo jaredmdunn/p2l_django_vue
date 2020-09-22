@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
@@ -21,13 +21,10 @@ class MyAccountPageView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     def get_object(self):
         return self.request.user
 
-class ReviewCreateView(CreateView, LoginRequiredMixin):
+class ReviewCreateView(LoginRequiredMixin, CreateView):
     model = Review
     form_class = ReviewForm
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
-
-# class ReviewDetailView(DetailView):
-#     model = Review
