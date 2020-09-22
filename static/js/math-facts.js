@@ -35,17 +35,17 @@ function generateProblem(operation, maxNum) {
 function saveScore(operation, maxNum, score) {
   const csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
   const data = {
-    'parameters': {
-      'operation': operation,
-      'max number': maxNum,
+    "parameters": {
+      "operation": operation,
+      "max-number": maxNum,
     },
-    'score': score,
+    "score": score,
   }
   fetch(ajaxURL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': csrfToken
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrfToken
     },
     body: JSON.stringify(data),
   })
@@ -80,7 +80,7 @@ window.addEventListener("load", (e) => {
   const finalScore = document.getElementById("final-score");
   const playAgain = document.getElementById("btn-play-again");
 
-  const PLAYTIME = 50;
+  const PLAYTIME = 30;
   playTimeSpan.innerHTML = PLAYTIME;
 
   let operation = operationSelect.value;

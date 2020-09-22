@@ -2,6 +2,7 @@ import json
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 
 from common.utils.text import unique_slug
@@ -58,11 +59,44 @@ class GameScore(models.Model):
 
     @property
     def is_high_score(self):
-        pass
+        params_values = self.game_score_parameters.all()
+
+        params_values_dict = {}
+        for pv in params_values:
+            params_values_dict[pv.parameter_id] = pv.value
+
+        param_value_query = Q()
+        for key, value in params_values_dict.items():
+            param_value_query = param_value_query | Q(parameter_id=key, value=value)
+
+        game_score_params = GameScoreParameters.objects.filter(param_value_query)
+        
+        if GameScore.objects.filter(
+            game_score_parameters__in=game_score_params, score__gt=self.score).exists():
+            return False
+        else:
+            return True
 
     @property
     def is_user_high_score(self):
-        pass
+        params_values = self.game_score_parameters.all()
+
+        params_values_dict = {}
+        for pv in params_values:
+            params_values_dict[pv.parameter_id] = pv.value
+
+        param_value_query = Q()
+        for key, value in params_values_dict.items():
+            param_value_query = param_value_query | Q(parameter_id=key, value=value)
+
+        game_score_params = GameScoreParameters.objects.filter(param_value_query)
+
+        if GameScore.objects.filter(
+            game_score_parameters__in=game_score_params, 
+            score__gt=self.score, user_id=self.user_id).exists():
+            return False
+        else:
+            return True
 
 class GameScoreParameters(models.Model):
     gamescore_id = models.ForeignKey(
