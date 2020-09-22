@@ -4,12 +4,6 @@
 {% block title %}Home{% endblock %}
 {% block main %}
   <h1>Welcome to Play2Learn</h1>
-  <!-- Carousel -->
-  <!-- <div class="row align-items-center" style="height: 10rem;">
-    <div id="carouselExampleControls" class="carousel slide mx-auto col-6" data-ride="carousel" data-interval="3000">
-      {{ show_featured_reviews }}
-    </div>
-  </div> -->
+  {% show_featured_reviews %}
   <p>Games Here</p>
-  {{ show_featured_reviews }}
 {% endblock %}

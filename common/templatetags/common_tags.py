@@ -1,5 +1,5 @@
 from games.models import Game
-from user.models import Review
+from users.models import Review
 from django import template
 
 register = template.Library()
