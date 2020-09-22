@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     # Local Apps
     'common.apps.CommonConfig',
+    'users.apps.UsersConfig',
     'games.apps.GamesConfig',
     'users.apps.UsersConfig',
 ]
