@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'crispy_forms',
 
     # Local Apps
+    'common.apps.CommonConfig',
     'users.apps.UsersConfig',
     'games.apps.GamesConfig',
 ]
