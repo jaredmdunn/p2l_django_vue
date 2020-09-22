@@ -4,6 +4,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm
 
+from .models import Review
+
 
 BIRTH_YEAR_CHOICES = range(1915, datetime.now().year)
 
@@ -32,3 +34,20 @@ class CustomUserChangeForm(UserChangeForm):
                 years = BIRTH_YEAR_CHOICES
             )
         }
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['review', 'anonymous']
+        widgets = {
+            'review': forms.Textarea(
+                attrs={'cols': 50, 'rows': 5, 'autofocus': True, 'placeholder': 'Hello'}
+            ) # cols may not do anything
+        }
+        labels = {
+            'review': 'Leave a review!'
+        }
+        help_texts = {
+            'anonymous': 'Check this if you don\'t want your username displayed',
+        }
+
