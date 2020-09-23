@@ -24,16 +24,11 @@ class Game(models.Model):
         super().save(*args, **kwargs)
 
 class Parameter(models.Model):
-    INPUT_TYPES = (
-        ('select', 'select'),
-        ('number', 'number'),
-    )
     parameter = models.CharField(max_length=100)
     game_id = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='parameters'
     )
     slug = models.SlugField(max_length=50, unique=True, null=False, editable=False)
-    input_type = models.CharField(max_length=50, choices=INPUT_TYPES)
     default_value = models.CharField(max_length=100)
     values = models.JSONField()
 

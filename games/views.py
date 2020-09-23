@@ -66,11 +66,11 @@ class ScoreListView(ListView):
 
         return context
 
-    # def get_queryset(self):
+    def get_queryset(self):
     #     ordering = self.get_ordering()
-    #     qs = GameScore.objects.all()
+        qs = GameScore.objects.all()
 
     #     if '/my-scores' in self.request.path_info:
     #         qs = qs.filter(user_id=self.request.user)
 
-    #     return qs.order_by(ordering)
+        return qs
