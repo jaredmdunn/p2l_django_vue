@@ -1,0 +1,35 @@
+<div>
+  <form>
+    {% for param in game_params.all %}
+      <label for="{{ param.slug }}">{{ param.parameter }}</label>
+          <select name="{{ param.slug }}" id="{{ param.slug }}">
+            {% for key, value in param.values.items %}
+              <option value="{{ key }}"
+                {% if value == param.default.value %}
+                  selected
+                {% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
+      </label>
+    {% endfor %}
+  </form>
+</div>
+<table>
+  <thead>
+    <th>Place</th>
+    <th>User</th>
+    <th>Score</th>
+    <th>Date</th>
+  </thead>
+  <tbody>
+    <!-- for all scores whose parameters match the designated parameters and values -->
+    {% for score in game.game_scores.all %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ score.user }}</td>
+        <td>{{ score.score }}</td>
+        <td>{{ score.created }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

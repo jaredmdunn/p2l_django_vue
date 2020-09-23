@@ -25,22 +25,14 @@
           {% for param in game.parameters.all %}
             <label for="{{ param.slug }}" class="col-4">{{ param.parameter }}</label>
             {% with values=param.values %}
-              {% if param.input_type == 'select' %}
-                <select id="{{ param.slug }}" class="col-6">
-                  {% for key, value in values.items %}
-                    <option value="{{ key }}"
-                      {% if value == param.default_value %}
-                        selected
-                      {% endif %}>{{ value }}</option>
-                  {% endfor %}
-                </select>
-              {% elif param.input_type == 'number' %}
-                <input type="number" id="{{ param.slug }}"
-                  {% for key, value in values.items %}
-                    {{ key }}="{{ value }}" 
-                  {% endfor %} 
-                  value="{{ param.default_value }}" class="col-6">
-              {% endif %}
+              <select id="{{ param.slug }}" class="col-6">
+                {% for key, value in values.items %}
+                  <option value="{{ key }}"
+                    {% if value == param.default_value %}
+                      selected
+                    {% endif %}>{{ value }}</option>
+                {% endfor %}
+              </select>
             {% endwith %}
           {% endfor %}
           <button id="btn-go" class="btn btn-success py-1">Go</button>
