@@ -16,7 +16,18 @@ def show_game_scores(game):
     return {'game_params': game_params}
 
 
+
+@register.inclusion_tag('common/game_scores.html')
+def show_game_scores(game):
+    game_params = game.parameters
+    return {'game_params': game_params}
+
+
 @register.inclusion_tag('common/featured_reviews.html')
 def show_featured_reviews(user):
     featured_reviews = Review.objects.filter(featured=True).order_by('created')
     return {'featured_reviews': featured_reviews, 'user': user}
+
+@register.inclusion_tag('users/show_stats.html')
+def show_stats(user):
+    return {'user': user}
