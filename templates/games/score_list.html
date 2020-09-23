@@ -6,6 +6,8 @@
 
 {% block main %}
   <h1>Leaderboards</h1>
+  {% show_stats current_user active_game %}
+  
   <ul class="nav nav-tabs">
     {% for game in game_list %}
       <li class="nav-item">
@@ -54,4 +56,6 @@
     </tbody>
   </table>
 
+      
+  
 {% endblock %}

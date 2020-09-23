@@ -116,10 +116,6 @@ class ParameterValue(models.Model):
                             null=False, editable=False)
     ordering_name = models.CharField(max_length=50, editable=False, null=False)
 
-    # @property
-    # def attribute_value(self):
-    #     return self.value.lower()
-
     def save(self, *args, **kwargs):
         if not self.slug:
             value = self.value

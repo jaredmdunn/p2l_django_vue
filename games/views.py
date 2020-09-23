@@ -91,3 +91,27 @@ def save_score(request, slug):
         'msg': msg,
     }
     return JsonResponse(response)
+
+
+# class ScoreListView(ListView):
+#     model = Game
+#     template_name = 'games/score_list.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+
+#         # order_fields, order_key, direction = self.get_order_settings()
+
+#         context['active_game'] = Game.objects.get(slug=self.kwargs['slug'])
+#         context['current_user'] = self.request.user
+
+#         return context
+
+#     def get_queryset(self):
+#     #     ordering = self.get_ordering()
+#         qs = GameScore.objects.all()
+
+#     #     if '/my-scores' in self.request.path_info:
+#     #         qs = qs.filter(user=self.request.user)
+
+#         return qs
