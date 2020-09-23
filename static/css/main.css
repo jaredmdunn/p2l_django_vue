@@ -18,6 +18,19 @@ footer a i {
   font-size: 1.5rem;
 }
 
+/* CAROUSEL STYLES */
+.review-item {
+  font-size: 1.3rem;
+}
+
+.review-inner {
+  height: 13rem;
+}
+
+#featured-reviews {
+  width: 35rem;
+}
+
 /* GAMES STYLES */
 #solution,
 #number-pad,

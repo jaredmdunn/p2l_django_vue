@@ -1,0 +1,34 @@
+<div class="row align-items-center">
+  <div id="featured-reviews" class="carousel slide mx-auto col-6" data-ride="carousel" data-interval="3000">
+    <div class="carousel-inner review-inner mx-auto row align-items-center">
+      {% if featured_reviews %}
+        <!-- Display reviews -->
+        {% for review in featured_reviews %}
+          {% if review == featured_reviews.first %}
+            <div class="carousel-item review-item active">
+              <p class="text-center">{{ review|linebreaksbr }}</p>
+            </div>
+          {% else %}
+            <div class="carousel-item review-item">
+              <p class="text-center">{{ review|linebreaksbr }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <!-- No reviews yet -->
+        <div class="carousel-item review-item active">
+          <p class="text-center">
+            {% if user.is_authenticated %}
+              Be the first to leave a
+              <a href="{% url 'users:create-review' %}">review</a>!
+            {% else %}
+              <!-- Redirect to game once functionality is available -->
+              Create an <a href="{% url 'account_login' %}">account</a>, play some games,
+              and be the first to leave a review! 
+            {% endif %}
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
