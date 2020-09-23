@@ -25,7 +25,7 @@ class Game(models.Model):
 
 class Parameter(models.Model):
     parameter = models.CharField(max_length=100)
-    game_id = models.ForeignKey(
+    game = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='parameters'
     )
     slug = models.SlugField(max_length=50, unique=True, null=False, editable=False)
@@ -42,11 +42,11 @@ class Parameter(models.Model):
         super().save(*args, **kwargs)
 
 class GameScore(models.Model):
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, 
         related_name='game_scores'
     )
-    game_id = models.ForeignKey(
+    game = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='game_scores'
     )
     score = models.PositiveIntegerField()
@@ -68,7 +68,7 @@ class GameScore(models.Model):
 
         if GameScore.objects.filter(
             game_score_parameters__in=game_score_params, 
-            score__gt=self.score, user_id=self.user_id).exists():
+            score__gt=self.score, user=self.user).exists():
             return False
         else:
             return True
@@ -81,16 +81,16 @@ class GameScore(models.Model):
 
         for pv in params_values:
             param_value_query = param_value_query | Q(
-                parameter_id=pv.parameter_id, value=pv.value)
+                parameter=pv.parameter, value=pv.value)
 
         return GameScoreParameters.objects.filter(param_value_query)
 
 class GameScoreParameters(models.Model):
-    gamescore_id = models.ForeignKey(
+    gamescore = models.ForeignKey(
         'GameScore', on_delete=models.CASCADE, 
         related_name='game_score_parameters'
     )
-    parameter_id = models.ForeignKey(
+    parameter = models.ForeignKey(
         'Parameter', on_delete=models.CASCADE, 
         related_name='game_score_parameters'
     )

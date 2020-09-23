@@ -32,12 +32,12 @@ def save_score(request, slug):
         # message should be `you beat your previous high score on this setting,
         # or "you can do better, you high score is ___"`
 
-        new_score = GameScore(user_id=user, game_id=game, score=score)
+        new_score = GameScore(user=user, game=game, score=score)
         new_score.save()
         
         for key, value in param_data.items():
             param = Parameter.objects.get(slug=key)
-            new_score_param = GameScoreParameters(gamescore_id=new_score, parameter_id=param, value=value)
+            new_score_param = GameScoreParameters(gamescore=new_score, parameter=param, value=value)
             new_score_param.save()
 
         if new_score.is_high_score:
@@ -63,6 +63,7 @@ class ScoreListView(ListView):
         # order_fields, order_key, direction = self.get_order_settings()
 
         context['active_game'] = Game.objects.get(slug=self.kwargs['slug'])
+        context['current_user'] = self.request.user
 
         return context
 
@@ -71,6 +72,6 @@ class ScoreListView(ListView):
         qs = GameScore.objects.all()
 
     #     if '/my-scores' in self.request.path_info:
-    #         qs = qs.filter(user_id=self.request.user)
+    #         qs = qs.filter(user=self.request.user)
 
         return qs
