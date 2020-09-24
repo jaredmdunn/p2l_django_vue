@@ -26,11 +26,11 @@
             <label for="{{ param.slug }}" class="col-4">{{ param.parameter }}</label>
             {% with values=param.values %}
               <select id="{{ param.slug }}" class="col-6">
-                {% for key, value in values.items %}
-                  <option value="{{ key }}"
-                    {% if value == param.default_value %}
+                {% for value_obj in values.all %}
+                  <option value="{{ value_obj.attribute_value }}"
+                    {% if value_obj == param.default_value %}
                       selected
-                    {% endif %}>{{ value }}</option>
+                    {% endif %}>{{ value_obj.value }}</option>
                 {% endfor %}
               </select>
             {% endwith %}
