@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Game, Parameter, ParameterValue, GameScore, GameScoreParameters
+from .models import Game, Parameter, ParameterValue, GameScore  # , GameScoreParameters
 
 
 class ParameterInline(admin.TabularInline):
@@ -18,15 +18,15 @@ class GameAdmin(admin.ModelAdmin):
         return ()
 
 
-class GameScoreParametersInline(admin.TabularInline):
-    model = GameScoreParameters
+# class GameScoreParametersInline(admin.TabularInline):
+#     model = GameScoreParameters
 
 
 @admin.register(GameScore)
 class GameScoreAdmin(admin.ModelAdmin):
     model = GameScore
     list_display = ['user', 'game', 'score', 'created']
-    inlines = [GameScoreParametersInline]
+    # inlines = [GameScoreParametersInline]
 
 
 @admin.register(ParameterValue)

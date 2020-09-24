@@ -20,7 +20,7 @@ class Game(models.Model):
         parameters = self.parameters
 
         for param in parameters.all():
-            param_value_dict[param.slug] = param.default_value
+            param_value_dict[param.slug] = param.default_value.attribute_value
 
         return param_value_dict
 
@@ -48,6 +48,9 @@ class GameScore(models.Model):
     game = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='game_scores'
     )
+    parameter_values = models.ManyToManyField(
+        'ParameterValue', related_name='game_scores'
+    )
     score = models.PositiveIntegerField()
     created = models.DateTimeField(auto_now_add=True)
 
@@ -73,32 +76,32 @@ class GameScore(models.Model):
 
         return True
 
-    @property
-    def game_score_params(self):
-        params_values = self.game_score_parameters.all()
+    # @property
+    # def game_score_params(self):
+    #     params_values = self.game_score_parameters.all()
 
-        param_value_query = Q()
+    #     param_value_query = Q()
 
-        for pv in params_values:
-            param_value_query = param_value_query | Q(
-                parameter=pv.parameter, value=pv.value)
+    #     for pv in params_values:
+    #         param_value_query = param_value_query | Q(
+    #             parameter=pv.parameter, value=pv.value)
 
-        return GameScoreParameters.objects.filter(param_value_query)
+    #     return GameScoreParameters.objects.filter(param_value_query)
 
 
-class GameScoreParameters(models.Model):
-    gamescore = models.ForeignKey(
-        'GameScore', on_delete=models.CASCADE,
-        related_name='game_score_parameters'
-    )
-    parameter = models.ForeignKey(
-        'Parameter', on_delete=models.CASCADE,
-        related_name='game_score_parameters'
-    )
-    value = models.CharField(max_length=100)
+# class GameScoreParameters(models.Model):
+#     gamescore = models.ForeignKey(
+#         'GameScore', on_delete=models.CASCADE,
+#         related_name='game_score_parameters'
+#     )
+#     parameter = models.ForeignKey(
+#         'Parameter', on_delete=models.CASCADE,
+#         related_name='game_score_parameters'
+#     )
+#     value = models.CharField(max_length=100)
 
-    class Meta:
-        verbose_name_plural = 'Game score parameters'
+#     class Meta:
+#         verbose_name_plural = 'Game score parameters'
 
 
 class Parameter(models.Model):

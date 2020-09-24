@@ -4,11 +4,12 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic import DetailView, ListView
 
-from .models import Game, GameScore, GameScoreParameters, Parameter
+from .models import Game, GameScore, Parameter  # , GameScoreParameters
 
 
 class GameDetailView(DetailView):
     model = Game
+
 
 class ScoreListView(ListView):
     model = Game
@@ -17,30 +18,33 @@ class ScoreListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        active_game = Game.objects.get(slug=self.kwargs['slug'])
-        context['active_game'] = active_game
-        
-        game_params = active_game.parameters
-        context['game_params'] = game_params.all()
+        # active_game = Game.objects.get(slug=self.kwargs['slug'])
+        # context['active_game'] = active_game
 
-        params = self.request.GET.copy()
+        # game_params = active_game.parameters
+        # context['game_params'] = game_params.all()
 
-        for gp in game_params.all():
-            if gp.slug not in params or not params[gp.slug]:
-                params[gp.slug] = active_game.parameter_defaults[gp.slug]
+        # params = self.request.GET.copy()
 
-        context["params"] = params
+        # # sets any blank parameter value to default
+        # for gp in game_params.all():
+        #     if gp.slug not in params or not params[gp.slug]:
+        #         params[gp.slug] = active_game.parameter_defaults[gp.slug]
 
-        param_value_query = Q()
-        for param, value in params.items():
-            parameter = Parameter.objects.get(slug=param)
-            param_value_query = param_value_query | Q(parameter=parameter, value=value)
+        # context["params"] = params
 
-        game_score_params = GameScoreParameters.objects.filter(param_value_query)
+        # param_value_query = Q()
+        # for param, value in params.items():
+        #     parameter = Parameter.objects.get(slug=param)
+        #     param_value_query = param_value_query | Q(
+        #         parameter=parameter, value=value)
 
-        context['scores'] = GameScore.objects.filter(
-            game=active_game, game_score_parameters__in=game_score_params
-        ).order_by('-score')[:21]
+        # game_score_params = GameScoreParameters.objects.filter(
+        #     param_value_query)
+
+        # context['scores'] = GameScore.objects.filter(
+        #     game=active_game, game_score_parameters__in=game_score_params
+        # ).order_by('-score')[:21]
 
         return context
 
@@ -69,10 +73,11 @@ def save_score(request, slug):
 
         new_score = GameScore(user=user, game=game, score=score)
         new_score.save()
-        
+
         for key, value in param_data.items():
             param = Parameter.objects.get(slug=key)
-            new_score_param = GameScoreParameters(gamescore=new_score, parameter=param, value=value)
+            new_score_param = GameScoreParameters(
+                gamescore=new_score, parameter=param, value=value)
             new_score_param.save()
 
         if new_score.is_high_score:
@@ -81,8 +86,8 @@ def save_score(request, slug):
             msg = 'You beat your high score!'
         else:
             msg = 'Your score was saved.'
-    
+
     response = {
-        'msg' : msg,
+        'msg': msg,
     }
     return JsonResponse(response)
