@@ -11,6 +11,17 @@ class Game(models.Model):
     game = models.CharField(max_length=100)
     slug = models.SlugField(max_length=50, unique=True, null=False, editable=False)
 
+    @property
+    def parameter_defaults(self):
+        param_value_dict = {}
+        
+        parameters = self.parameters
+
+        for param in parameters.all():
+            param_value_dict[param.slug] = param.default_value
+
+        return param_value_dict
+
     def get_absolute_url(self):
         return reverse('games:game', args=[self.slug])
     
@@ -23,9 +34,12 @@ class Game(models.Model):
             self.slug = unique_slug(value, type(self))
         super().save(*args, **kwargs)
 
+    class Meta:
+        ordering = ['game']
+
 class Parameter(models.Model):
     parameter = models.CharField(max_length=100)
-    game_id = models.ForeignKey(
+    game = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='parameters'
     )
     slug = models.SlugField(max_length=50, unique=True, null=False, editable=False)
@@ -42,11 +56,11 @@ class Parameter(models.Model):
         super().save(*args, **kwargs)
 
 class GameScore(models.Model):
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, 
         related_name='game_scores'
     )
-    game_id = models.ForeignKey(
+    game = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='game_scores'
     )
     score = models.PositiveIntegerField()
@@ -54,43 +68,44 @@ class GameScore(models.Model):
 
     @property
     def is_high_score(self):
-        game_score_params = self.get_game_score_params
+        game_score_params = self.game_score_params
         
         if GameScore.objects.filter(
-            game_score_parameters__in=game_score_params, score__gt=self.score).exists():
+            game_score_parameters__in=game_score_params, score__gt=self.score
+        ).exists():
             return False
-        else:
-            return True
+        
+        return True
 
     @property
     def is_user_high_score(self):
-        game_score_params = self.get_game_score_params
+        game_score_params = self.game_score_params
 
         if GameScore.objects.filter(
-            game_score_parameters__in=game_score_params, 
-            score__gt=self.score, user_id=self.user_id).exists():
+            game_score_parameters__in=game_score_params, score__gt=self.score, user=self.user
+        ).exists():
             return False
-        else:
-            return True
+        
+        return True
 
     @property
-    def get_game_score_params(self):
+    def game_score_params(self):
         params_values = self.game_score_parameters.all()
 
         param_value_query = Q()
 
         for pv in params_values:
             param_value_query = param_value_query | Q(
-                parameter_id=pv.parameter_id, value=pv.value)
+                parameter=pv.parameter, value=pv.value)
 
         return GameScoreParameters.objects.filter(param_value_query)
 
 class GameScoreParameters(models.Model):
-    gamescore_id = models.ForeignKey(
+    gamescore = models.ForeignKey(
         'GameScore', on_delete=models.CASCADE, 
         related_name='game_score_parameters'
     )
-    parameter_id = models.ForeignKey(
+    parameter = models.ForeignKey(
         'Parameter', on_delete=models.CASCADE, 
         related_name='game_score_parameters'
     )

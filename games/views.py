@@ -10,6 +10,41 @@ from .models import Game, GameScore, GameScoreParameters, Parameter
 class GameDetailView(DetailView):
     model = Game
 
+class ScoreListView(ListView):
+    model = Game
+    template_name = 'games/score_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        active_game = Game.objects.get(slug=self.kwargs['slug'])
+        context['active_game'] = active_game
+        
+        game_params = active_game.parameters
+        context['game_params'] = game_params.all()
+
+        params = self.request.GET.copy()
+
+        for gp in game_params.all():
+            if gp.slug not in params or not params[gp.slug]:
+                params[gp.slug] = active_game.parameter_defaults[gp.slug]
+
+        context["params"] = params
+
+        param_value_query = Q()
+        for param, value in params.items():
+            parameter = Parameter.objects.get(slug=param)
+            param_value_query = param_value_query | Q(parameter=parameter, value=value)
+
+        game_score_params = GameScoreParameters.objects.filter(param_value_query)
+
+        context['scores'] = GameScore.objects.filter(
+            game=active_game, game_score_parameters__in=game_score_params
+        ).order_by('-score')[:21]
+
+        return context
+
+
 @login_required
 def save_score(request, slug):
     user = request.user
@@ -32,12 +67,12 @@ def save_score(request, slug):
         # message should be `you beat your previous high score on this setting,
         # or "you can do better, you high score is ___"`
 
-        new_score = GameScore(user_id=user, game_id=game, score=score)
+        new_score = GameScore(user=user, game=game, score=score)
         new_score.save()
         
         for key, value in param_data.items():
             param = Parameter.objects.get(slug=key)
-            new_score_param = GameScoreParameters(gamescore_id=new_score, parameter_id=param, value=value)
+            new_score_param = GameScoreParameters(gamescore=new_score, parameter=param, value=value)
             new_score_param.save()
 
         if new_score.is_high_score:
@@ -51,26 +86,3 @@ def save_score(request, slug):
         'msg' : msg,
     }
     return JsonResponse(response)
-
-
-class ScoreListView(ListView):
-    model = Game
-    template_name = 'games/score_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        # order_fields, order_key, direction = self.get_order_settings()
-
-        context['active_game'] = Game.objects.get(slug=self.kwargs['slug'])
-
-        return context
-
-    def get_queryset(self):
-    #     ordering = self.get_ordering()
-        qs = GameScore.objects.all()
-
-    #     if '/my-scores' in self.request.path_info:
-    #         qs = qs.filter(user_id=self.request.user)
-
-        return qs

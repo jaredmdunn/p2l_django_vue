@@ -12,3 +12,7 @@ def template_exists(value):
         return True
     except template.TemplateDoesNotExist:
         return False
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
