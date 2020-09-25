@@ -38,7 +38,6 @@ class ScoreListView(ListView):
 
         # filters the scores (requires multiple filters because ManyToManyField)
         for param, value in params.items():
-            print(value)
             scores = scores.filter(
                 parameter_values__value__iexact=value,
                 parameter_values__parameter__slug=param
