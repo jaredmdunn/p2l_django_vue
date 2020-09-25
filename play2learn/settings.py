@@ -27,12 +27,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [  # Necessary for the Debug Toolbar
+    '127.0.0.1',
+]
+
 
 # Application definition
 
 INSTALLED_APPS = [
     # Django Apps
     'django.contrib.admin',
+    'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -45,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'crispy_forms',
+    'debug_toolbar',
 
     # Local Apps
     'common.apps.CommonConfig',
@@ -57,6 +63,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # The Debug Toolbar
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -141,15 +148,15 @@ AUTH_USER_MODEL = 'users.CustomUser'
 LOGIN_URL = 'account_login'
 LOGIN_REDIRECT_URL = 'pages:homepage'
 
-## django-allauth settings
-ACCOUNT_AUTHENTICATION_METHOD = 'email' # Default: 'username'
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1 # Default: 3
-ACCOUNT_EMAIL_REQUIRED = True # Default: False
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # Default: 'optional'
-ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5 # Default: 5
-ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300 # Default 300
-ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login' # Default: '/'
-ACCOUNT_USERNAME_REQUIRED = False # Default: True
+# django-allauth settings
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  # Default: 'username'
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1  # Default: 3
+ACCOUNT_EMAIL_REQUIRED = True  # Default: False
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Default: 'optional'
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5  # Default: 5
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300  # Default 300
+ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'  # Default: '/'
+ACCOUNT_USERNAME_REQUIRED = False  # Default: True
 ACCOUNT_SIGNUP_FORM_CLASS = 'users.forms.SignupForm'
 
 

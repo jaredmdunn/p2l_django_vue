@@ -20,21 +20,21 @@ class Game(models.Model):
         parameters = self.parameters
 
         for param in parameters.all():
-            param_value_dict[param.slug] = param.default_value
+            param_value_dict[param.slug] = param.default_value.attribute_value
 
         return param_value_dict
 
     def get_absolute_url(self):
         return reverse('games:game', args=[self.slug])
 
-    def __str__(self):
-        return self.game
-
     def save(self, *args, **kwargs):
         if not self.slug:
             value = str(self)
             self.slug = unique_slug(value, type(self))
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.game
 
     class Meta:
         ordering = ['game']
@@ -48,57 +48,31 @@ class GameScore(models.Model):
     game = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='game_scores'
     )
+    parameter_values = models.ManyToManyField(
+        'ParameterValue', related_name='game_scores'
+    )
     score = models.PositiveIntegerField()
     created = models.DateTimeField(auto_now_add=True)
 
     @property
     def is_high_score(self):
-        game_score_params = self.game_score_params
-
-        if GameScore.objects.filter(
-            game_score_parameters__in=game_score_params, score__gt=self.score
-        ).exists():
-            return False
-
-        return True
+        return not self.__scores_with_same_param_settings().filter(score__gt=self.score).exists()
 
     @property
     def is_user_high_score(self):
-        game_score_params = self.game_score_params
+        # requires testing
+        return not self.__scores_with_same_param_settings() \
+            .filter(score__gt=self.score, user=self.user).exists()
 
-        if GameScore.objects.filter(
-            game_score_parameters__in=game_score_params, score__gt=self.score, user=self.user
-        ).exists():
-            return False
+    def __scores_with_same_param_settings(self):
+        scores = GameScore.objects.filter(game=self.game)
+        for param_value in self.parameter_values.all():
+            scores = scores.filter(
+                parameter_values__value=param_value.value,
+                parameter_values__parameter__slug=param_value.parameter.slug
+            )
 
-        return True
-
-    @property
-    def game_score_params(self):
-        params_values = self.game_score_parameters.all()
-
-        param_value_query = Q()
-
-        for pv in params_values:
-            param_value_query = param_value_query | Q(
-                parameter=pv.parameter, value=pv.value)
-
-        return GameScoreParameters.objects.filter(param_value_query)
-
-
-class GameScoreParameters(models.Model):
-    gamescore = models.ForeignKey(
-        'GameScore', on_delete=models.CASCADE,
-        related_name='game_score_parameters'
-    )
-    parameter = models.ForeignKey(
-        'Parameter', on_delete=models.CASCADE,
-        related_name='game_score_parameters'
-    )
-    value = models.CharField(max_length=100)
-
-    class Meta:
-        verbose_name_plural = 'Game score parameters'
+        return scores
 
 
 class Parameter(models.Model):
@@ -109,14 +83,12 @@ class Parameter(models.Model):
     slug = models.SlugField(max_length=50, unique=True,
                             null=False, editable=False)
     default_value = models.ForeignKey(
-        'ParameterValue', on_delete=models.CASCADE, related_name='parameters_as_default'
+        'ParameterValue', on_delete=models.CASCADE,
+        related_name='parameters_as_default'
     )
-    values = models.ManyToManyField(
-        'ParameterValue', related_name='parameters'
-    )
-
-    def __str__(self):
-        return self.parameter
+    # values = models.ManyToManyField(
+    #     'ParameterValue', related_name='parameter'
+    # )
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -124,14 +96,20 @@ class Parameter(models.Model):
             self.slug = unique_slug(value, type(self))
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return self.parameter
+
 
 class ParameterValue(models.Model):
     value = models.CharField(max_length=50,
                              help_text="Value should be uppercase word.")
+    parameter = models.ForeignKey(
+        Parameter, on_delete=models.CASCADE, related_name='values'
+    )
 
     @property
     def attribute_value(self):
         return self.value.lower()
 
     def __str__(self):
-        return self.value
+        return self.parameter.parameter + ': ' + self.value
