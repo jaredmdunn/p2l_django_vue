@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic import DetailView, ListView
@@ -7,8 +8,9 @@ from django.views.generic import DetailView, ListView
 from .models import Game, GameScore, GameScoreParameters, Parameter
 
 
-class GameDetailView(DetailView):
+class GameDetailView(LoginRequiredMixin, DetailView):
     model = Game
+
 
 class ScoreListView(ListView):
     model = Game
@@ -19,7 +21,7 @@ class ScoreListView(ListView):
 
         active_game = Game.objects.get(slug=self.kwargs['slug'])
         context['active_game'] = active_game
-        
+
         game_params = active_game.parameters
         context['game_params'] = game_params.all()
 
@@ -34,9 +36,11 @@ class ScoreListView(ListView):
         param_value_query = Q()
         for param, value in params.items():
             parameter = Parameter.objects.get(slug=param)
-            param_value_query = param_value_query | Q(parameter=parameter, value=value)
+            param_value_query = param_value_query | Q(
+                parameter=parameter, value=value)
 
-        game_score_params = GameScoreParameters.objects.filter(param_value_query)
+        game_score_params = GameScoreParameters.objects.filter(
+            param_value_query)
 
         context['scores'] = GameScore.objects.filter(
             game=active_game, game_score_parameters__in=game_score_params
@@ -69,10 +73,11 @@ def save_score(request, slug):
 
         new_score = GameScore(user=user, game=game, score=score)
         new_score.save()
-        
+
         for key, value in param_data.items():
             param = Parameter.objects.get(slug=key)
-            new_score_param = GameScoreParameters(gamescore=new_score, parameter=param, value=value)
+            new_score_param = GameScoreParameters(
+                gamescore=new_score, parameter=param, value=value)
             new_score_param.save()
 
         if new_score.is_high_score:
@@ -81,8 +86,8 @@ def save_score(request, slug):
             msg = 'You beat your high score!'
         else:
             msg = 'Your score was saved.'
-    
+
     response = {
-        'msg' : msg,
+        'msg': msg,
     }
     return JsonResponse(response)
