@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic import DetailView, ListView
 
-from .models import Game, GameScore, Parameter  # , GameScoreParameters
+from .models import Game, GameScore, Parameter, ParameterValue
 
 
 class GameDetailView(LoginRequiredMixin, DetailView):
@@ -19,33 +19,34 @@ class ScoreListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # active_game = Game.objects.get(slug=self.kwargs['slug'])
-        # context['active_game'] = active_game
+        active_game = Game.objects.get(slug=self.kwargs['slug'])
+        context['active_game'] = active_game
 
-        # game_params = active_game.parameters
-        # context['game_params'] = game_params.all()
+        game_params = active_game.parameters
+        context['game_params'] = game_params.all()
 
-        # params = self.request.GET.copy()
+        params = self.request.GET.copy()
 
-        # # sets any blank parameter value to default
-        # for gp in game_params.all():
-        #     if gp.slug not in params or not params[gp.slug]:
-        #         params[gp.slug] = active_game.parameter_defaults[gp.slug]
+        # sets any blank parameter value to default
+        for gp in game_params.all():
+            if gp.slug not in params or not params[gp.slug]:
+                params[gp.slug] = active_game.parameter_defaults[gp.slug]
 
-        # context["params"] = params
+        context['params'] = params
 
-        # param_value_query = Q()
-        # for param, value in params.items():
-        #     parameter = Parameter.objects.get(slug=param)
-        #     param_value_query = param_value_query | Q(
-        #         parameter=parameter, value=value)
+        scores = GameScore.objects.filter(game=active_game)
 
-        # game_score_params = GameScoreParameters.objects.filter(
-        #     param_value_query)
+        # filters the scores (requires multiple filters because ManyToManyField)
+        for param, value in params.items():
+            print(value)
+            scores = scores.filter(
+                parameter_values__value__iexact=value,
+                parameter_values__parameter__slug=param
+            )
 
-        # context['scores'] = GameScore.objects.filter(
-        #     game=active_game, game_score_parameters__in=game_score_params
-        # ).order_by('-score')[:21]
+        scores = scores.prefetch_related('user')
+
+        context['scores'] = scores.order_by('-score')[:21]
 
         return context
 
@@ -77,9 +78,8 @@ def save_score(request, slug):
 
         for key, value in param_data.items():
             param = Parameter.objects.get(slug=key)
-            new_score_param = GameScoreParameters(
-                gamescore=new_score, parameter=param, value=value)
-            new_score_param.save()
+            param_value = param.values.get(value__iexact=value)
+            new_score.parameter_values.add(param_value)
 
         if new_score.is_high_score:
             msg = 'You beat the high score!'

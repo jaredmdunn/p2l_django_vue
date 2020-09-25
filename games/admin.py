@@ -32,4 +32,4 @@ class GameScoreAdmin(admin.ModelAdmin):
 @admin.register(ParameterValue)
 class ParameterValueAdmin(admin.ModelAdmin):
     model = ParameterValue
-    list_display = ['value']
+    list_display = ['value', 'parameter']

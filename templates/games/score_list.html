@@ -6,7 +6,7 @@
 
 {% block main %}
   <h1>Leaderboards</h1>
-  <!-- <ul class="nav nav-tabs">
+  <ul class="nav nav-tabs">
     {% for game in game_list %}
       <li class="nav-item">
         <a class="nav-link
@@ -33,17 +33,17 @@
       {% endfor %}
       <button type="submit">Submit</button>
     </form>
-  </div> -->
-  <!-- <table class="table table-responsive table-striped">
+  </div>
+  <table class="table table-responsive table-striped">
     <thead>
       <th>Place</th>
       <th>User</th>
       <th>Score</th>
       <th>Date</th>
     </thead>
-    <tbody> -->
+    <tbody>
       <!-- for all scores whose parameters match the designated parameters and values -->
-      <!-- {% for score in scores %}
+      {% for score in scores %}
         <tr>
           <td>{{ forloop.counter }}</td>
           <td>{{ score.user }}</td>
@@ -52,6 +52,6 @@
         </tr>
       {% endfor %}
     </tbody>
-  </table> -->
+  </table>
 
 {% endblock %}
