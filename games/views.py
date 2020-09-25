@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic import DetailView, ListView
@@ -7,7 +8,7 @@ from django.views.generic import DetailView, ListView
 from .models import Game, GameScore, Parameter  # , GameScoreParameters
 
 
-class GameDetailView(DetailView):
+class GameDetailView(LoginRequiredMixin, DetailView):
     model = Game
 
 
@@ -18,11 +19,11 @@ class ScoreListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # active_game = Game.objects.get(slug=self.kwargs['slug'])
-        # context['active_game'] = active_game
+        active_game = Game.objects.get(slug=self.kwargs['slug'])
+        context['active_game'] = active_game
 
-        # game_params = active_game.parameters
-        # context['game_params'] = game_params.all()
+        game_params = active_game.parameters
+        context['game_params'] = game_params.all()
 
         # params = self.request.GET.copy()
 
@@ -33,14 +34,14 @@ class ScoreListView(ListView):
 
         # context["params"] = params
 
-        # param_value_query = Q()
-        # for param, value in params.items():
-        #     parameter = Parameter.objects.get(slug=param)
-        #     param_value_query = param_value_query | Q(
-        #         parameter=parameter, value=value)
+        param_value_query = Q()
+        for param, value in params.items():
+            parameter = Parameter.objects.get(slug=param)
+            param_value_query = param_value_query | Q(
+                parameter=parameter, value=value)
 
-        # game_score_params = GameScoreParameters.objects.filter(
-        #     param_value_query)
+        game_score_params = GameScoreParameters.objects.filter(
+            param_value_query)
 
         # context['scores'] = GameScore.objects.filter(
         #     game=active_game, game_score_parameters__in=game_score_params
