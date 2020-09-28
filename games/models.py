@@ -20,7 +20,7 @@ class Game(models.Model):
         parameters = self.parameters
 
         for param in parameters.all():
-            param_value_dict[param.slug] = param.default_value.attribute_value
+            param_value_dict[param.slug] = param.default_value.slug
 
         return param_value_dict
 
@@ -83,7 +83,7 @@ class Parameter(models.Model):
     slug = models.SlugField(max_length=50, unique=True,
                             null=False, editable=False)
     default_value = models.ForeignKey(
-        'ParameterValue', on_delete=models.CASCADE,
+        'ParameterValue', on_delete=models.CASCADE, null=True, blank=True,
         related_name='parameters_as_default'
     )
     # values = models.ManyToManyField(
@@ -106,10 +106,21 @@ class ParameterValue(models.Model):
     parameter = models.ForeignKey(
         Parameter, on_delete=models.CASCADE, related_name='values'
     )
+    slug = models.SlugField(max_length=50, unique=True,
+                            null=True, editable=False)
 
-    @property
-    def attribute_value(self):
-        return self.value.lower()
+    # @property
+    # def attribute_value(self):
+    #     return self.value.lower()
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            value = self.value
+            self.slug = unique_slug(value, type(self))
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.parameter.parameter + ': ' + self.value
+
+    class Meta:
+        ordering = ['parameter', 'value']
