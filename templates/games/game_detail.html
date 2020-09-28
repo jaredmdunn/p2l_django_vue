@@ -27,7 +27,7 @@
             {% with values=param.values %}
               <select id="{{ param.slug }}" class="col-6">
                 {% for value_obj in values.all %}
-                  <option value="{{ value_obj.attribute_value }}"
+                  <option value="{{ value_obj.slug }}"
                     {% if value_obj == param.default_value %}
                       selected
                     {% endif %}>{{ value_obj.value }}</option>
