@@ -23,8 +23,8 @@
         <label for="{{ param.slug }}">{{ param.parameter }}</label>
             <select name="{{ param.slug }}" id="{{ param.slug }}">
               {% for value_obj in param.values.all %}
-                <option value="{{ value_obj.attribute_value }}"
-                  {% if value_obj == params|get_item:param.slug %}
+                <option value="{{ value_obj.slug }}" id="{{ params|get_item:param.slug }}"
+                  {% if value_obj.slug == params|get_item:param.slug %}
                     selected
                   {% endif %}>{{ value_obj.value }}</option>
               {% endfor %}
