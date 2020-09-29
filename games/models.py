@@ -20,7 +20,10 @@ class Game(models.Model):
         parameters = self.parameters
 
         for param in parameters.all():
-            param_value_dict[param.slug] = param.default_value.slug
+            if param.default_value:
+                param_value_dict[param.slug] = param.default_value.slug
+            else:
+                param_value_dict[param.slug] = param.values.all()[0].slug
 
         return param_value_dict
 
