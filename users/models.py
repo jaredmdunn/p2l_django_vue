@@ -70,27 +70,29 @@ class CustomUser(AbstractUser):
             dict: A dictionary linking parameter to score
         """
         high_score = 0
-        user_scores_list = GameScore.objects.filter(game=game, user=self)
+        user_scores_list = GameScore.objects.filter(
+            game=game, user=self, created__lt=date)
 
         # build up dictionary of personal bests
         personal_bests_dict = {}
         for score in user_scores_list:
-            if score.created.date() < date:
-                game_score_param_list = []
+            # if score.created.date() < date:
+            # game_score_param_list = []
+            score_params = tuple(score.parameter_values.all())
+            score = score.score
 
-                # build list of parameter values
-                for game_score_param in score.game_score_parameters:
-                    game_score_param_list.append(
-                        (game_score_param.parameter, game_score_param.value))
+            # build list of parameter values
+            # for game_score_param in score.game_score_parameters:
+            #     game_score_param_list.append(
+            #         (game_score_param.parameter, game_score_param.value))
 
-                # if already has pb, compare, else add to personal best dict
-                if personal_bests_dict.has_key(game_score_param_list):
-                    prev_high_score = personal_bests_dict(
-                        game_score_param_list)
-                    if score.value > prev_high_score:
-                        personal_bests_dict[game_score_param_list] = score.value
-                else:
-                    personal_bests_dict[game_score_param_list] = score.value
+            # if already has pb, compare, else add to personal best dict
+            if score_params in personal_bests_dict:
+                prev_high_score = personal_bests_dict[score_params]
+                if score > prev_high_score:
+                    personal_bests_dict[score_params] = score
+            else:
+                personal_bests_dict[score_params] = score
 
         return personal_bests_dict
 
