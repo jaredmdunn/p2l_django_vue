@@ -29,11 +29,13 @@ class CustomUser(AbstractUser):
         today = datetime.date.today()
         yesterday = today - datetime.timedelta(days=1)
         personal_bests_one_day = self.__count_personal_bests(
-            yesterday, today, game)
+            yesterday, today, game
+        )
         # number improved in past week
         last_week = today - datetime.timedelta(days=7)
         personal_bests_one_week = self.__count_personal_bests(
-            last_week, today, game)
+            last_week, today, game
+        )
 
         return {
             'Number of new personal bests achieved today': personal_bests_one_day,
