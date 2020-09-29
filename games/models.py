@@ -101,13 +101,17 @@ class Parameter(models.Model):
 
 
 class ParameterValue(models.Model):
-    value = models.CharField(max_length=50,
-                             help_text="Value should be uppercase word.")
+    value = models.CharField(
+        max_length=50,
+        help_text="Value should be uppercase word. Numbers must be less than 10 digits \
+            without chars to order properly."
+    )
     parameter = models.ForeignKey(
         Parameter, on_delete=models.CASCADE, related_name='values'
     )
     slug = models.SlugField(max_length=50, unique=True,
-                            null=True, editable=False)
+                            null=False, editable=False)
+    ordering_name = models.CharField(max_length=50, editable=False, null=False)
 
     # @property
     # def attribute_value(self):
@@ -117,10 +121,20 @@ class ParameterValue(models.Model):
         if not self.slug:
             value = self.value
             self.slug = unique_slug(value, type(self))
+        if not self.ordering_name:
+            self.ordering_name = self.__generate_ordering_name()
         super().save(*args, **kwargs)
+
+    def __generate_ordering_name(self):
+        if self.value.isdigit():
+            value = int(self.value)
+            value = f'{value:09d}'
+        else:
+            value = self.value
+        return value
 
     def __str__(self):
         return self.parameter.parameter + ': ' + self.value
 
     class Meta:
-        ordering = ['parameter', 'value']
+        ordering = ['parameter', 'ordering_name']
