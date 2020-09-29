@@ -50,6 +50,12 @@ class ScoreListView(ListView):
 
         return context
 
+    # def get_queryset(self):
+    #     qs = GameScore.objects.all()
+    #     if '/my-scores' in self.request.path_info:
+    #         qs = qs.filter(user=self.request.user)
+    #     return qs.prefetch_related('game', 'parameter')
+
 
 @login_required
 def save_score(request, slug):
