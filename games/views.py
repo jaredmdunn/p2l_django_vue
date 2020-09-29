@@ -43,6 +43,17 @@ class ScoreListView(ListView):
                 parameter_values__parameter__slug=param
             )
 
+        # initialize normal leaderboards tab_path
+        tab_path = 'games:leaderboards'
+
+        # if on my-scores page, update tab_path and filter scores by user
+        if '/account' in self.request.path_info:
+            tab_path = 'users:my-scores'
+            scores = scores.filter(user=self.request.user)
+            context['is_my_scores'] = True
+
+        context['tab_path'] = tab_path
+
         scores = scores.prefetch_related('user')
 
         context['scores'] = scores.order_by('-score')[:21]
