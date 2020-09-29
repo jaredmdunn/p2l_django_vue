@@ -21,6 +21,7 @@ class ScoreListView(ListView):
 
         active_game = Game.objects.get(slug=self.kwargs['slug'])
         context['active_game'] = active_game
+        context['current_user'] = self.request.user
 
         game_params = active_game.parameters
         context['game_params'] = game_params.all()

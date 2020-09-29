@@ -5,7 +5,8 @@ from django.urls import reverse
 
 import datetime
 
-from games.models import Game, Parameter, GameScore, GameScoreParameters
+from games.models import Game, Parameter, GameScore
+
 
 class CustomUser(AbstractUser):
     dob = models.DateField(
@@ -27,11 +28,13 @@ class CustomUser(AbstractUser):
         # number improved in past day
         today = datetime.date.today()
         yesterday = today - datetime.timedelta(days=1)
-        personal_bests_one_day = self.__count_personal_bests(yesterday, today, game)
+        personal_bests_one_day = self.__count_personal_bests(
+            yesterday, today, game)
         # number improved in past week
         last_week = today - datetime.timedelta(days=7)
-        personal_bests_one_week = self.__count_personal_bests(last_week, today, game)
-        
+        personal_bests_one_week = self.__count_personal_bests(
+            last_week, today, game)
+
         return {
             'Number of new personal bests achieved today': personal_bests_one_day,
             'Number of new personal best achieved within the last week': personal_bests_one_week,
@@ -69,27 +72,31 @@ class CustomUser(AbstractUser):
         high_score = 0
         user_scores_list = GameScore.objects.filter(game=game, user=self)
 
+        # build up dictionary of personal bests
         personal_bests_dict = {}
         for score in user_scores_list:
             if score.created.date() < date:
                 game_score_param_list = []
 
+                # build list of parameter values
                 for game_score_param in score.game_score_parameters:
-                    game_score_param_list.append((game_score_param.parameter,game_score_param.value))
+                    game_score_param_list.append(
+                        (game_score_param.parameter, game_score_param.value))
 
+                # if already has pb, compare, else add to personal best dict
                 if personal_bests_dict.has_key(game_score_param_list):
-                    prev_high_score = personal_bests_dict(game_score_param_list)
+                    prev_high_score = personal_bests_dict(
+                        game_score_param_list)
                     if score.value > prev_high_score:
                         personal_bests_dict[game_score_param_list] = score.value
                 else:
                     personal_bests_dict[game_score_param_list] = score.value
-        
+
         return personal_bests_dict
-
-
 
     def get_absolute_url(self):
         return reverse('my-account')
+
 
 class Review(models.Model):
     anonymous = models.BooleanField(default=False)
