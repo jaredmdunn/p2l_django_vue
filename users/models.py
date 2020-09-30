@@ -4,6 +4,7 @@ from django.db import models
 from django.urls import reverse
 
 import datetime
+import pytz
 
 from games.models import Game, Parameter, GameScore
 
@@ -25,14 +26,17 @@ class CustomUser(AbstractUser):
         #     print('\n\n\n\n\n')
         # if Game.objects.game_scores.filter(user=self):
         #     pass
+
+        # set up dates
+        today = self.__datetime_x_days_ago(0)
+        yesterday = self.__datetime_x_days_ago(1)
+        last_week = self.__datetime_x_days_ago(7)
+
         # number improved in past day
-        today = datetime.date.today()
-        yesterday = today - datetime.timedelta(days=1)
         personal_bests_one_day = self.__count_personal_bests(
             yesterday, today, game
         )
         # number improved in past week
-        last_week = today - datetime.timedelta(days=7)
         personal_bests_one_week = self.__count_personal_bests(
             last_week, today, game
         )
@@ -42,7 +46,19 @@ class CustomUser(AbstractUser):
             'Number of new personal best achieved within the last week': personal_bests_one_week,
         }
 
-    def __count_personal_bests(self, early_date, later_date, game):
+    def __datetime_x_days_ago(self, x):
+        # create today's date
+        today = datetime.date.today()
+
+        # create new datetime
+        new_datetime = datetime.datetime.combine(
+            datetime.date.today() - datetime.timedelta(days=x),
+            datetime.datetime.max.time()
+        ).replace(tzinfo=pytz.UTC)  # replace this to change timezone
+
+        return new_datetime
+
+    def __count_personal_bests(self, early_datetime, later_datetime, game):
         """Counts the number of high scores achieved between the dates
 
         Args:
@@ -52,8 +68,10 @@ class CustomUser(AbstractUser):
         Returns:
             int: the count
         """
-        early_personal_bests = self.__personal_bests_before(early_date, game)
-        later_personal_bests = self.__personal_bests_before(later_date, game)
+        early_personal_bests = self.__personal_bests_before(
+            early_datetime, game)
+        later_personal_bests = self.__personal_bests_before(
+            later_datetime, game)
 
         count = 0
         for param_set in early_personal_bests:
@@ -62,7 +80,7 @@ class CustomUser(AbstractUser):
 
         return count
 
-    def __personal_bests_before(self, date, game):
+    def __personal_bests_before(self, end_datetime, game):
         """Finds the high scores before a certain date
 
         Args:
@@ -73,20 +91,15 @@ class CustomUser(AbstractUser):
         """
         high_score = 0
         user_scores_list = GameScore.objects.filter(
-            game=game, user=self, created__lt=date)
+            game=game, user=self, created__lte=end_datetime
+        )
 
         # build up dictionary of personal bests
         personal_bests_dict = {}
         for score in user_scores_list:
-            # if score.created.date() < date:
-            # game_score_param_list = []
+            # get hashable parameter values for use as key in personal_bests_dict
             score_params = tuple(score.parameter_values.all())
             score = score.score
-
-            # build list of parameter values
-            # for game_score_param in score.game_score_parameters:
-            #     game_score_param_list.append(
-            #         (game_score_param.parameter, game_score_param.value))
 
             # if already has pb, compare, else add to personal best dict
             if score_params in personal_bests_dict:
