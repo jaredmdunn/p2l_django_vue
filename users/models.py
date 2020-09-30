@@ -27,6 +27,8 @@ class CustomUser(AbstractUser):
         # if Game.objects.game_scores.filter(user=self):
         #     pass
 
+        stats = {}
+
         # set up dates
         today = self.__datetime_x_days_ago(0)
         yesterday = self.__datetime_x_days_ago(1)
@@ -36,15 +38,25 @@ class CustomUser(AbstractUser):
         personal_bests_one_day = self.__count_personal_bests(
             yesterday, today, game
         )
+        stats['New personal bests achieved today'] = personal_bests_one_day
+
         # number improved in past week
         personal_bests_one_week = self.__count_personal_bests(
             last_week, today, game
         )
+        stats['New personal bests achieved within the last week'] = personal_bests_one_week
 
-        return {
-            'Number of new personal bests achieved today': personal_bests_one_day,
-            'Number of new personal best achieved within the last week': personal_bests_one_week,
-        }
+        # number of high scores
+        user_scores_list = GameScore.objects.filter(
+            game=game, user=self
+        )
+        num_high_scores = 0
+        for score in user_scores_list:
+            if score.is_high_score:
+                num_high_scores += 1
+        stats['Your high scores'] = num_high_scores
+
+        return stats
 
     def __datetime_x_days_ago(self, x):
         # create today's date
