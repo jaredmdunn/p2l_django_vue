@@ -19,7 +19,8 @@ class ScoreListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        active_game = Game.objects.get(slug=self.kwargs['slug'])
+        active_game = Game.objects.prefetch_related(
+            'parameters').get(slug=self.kwargs['slug'])
         context['active_game'] = active_game
         context['current_user'] = self.request.user
 

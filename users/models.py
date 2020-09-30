@@ -29,7 +29,17 @@ class CustomUser(AbstractUser):
 
         stats = {}
 
-        # set up dates
+        # number of high scores
+        user_scores_list = GameScore.objects.prefetch_related('game').filter(
+            game=game, user=self
+        )
+        num_high_scores = 0
+        for score in user_scores_list:
+            if score.is_high_score:
+                num_high_scores += 1
+        stats['Your high scores'] = num_high_scores
+
+        # set up dates for improvement stats
         today = self.__datetime_x_days_ago(0)
         yesterday = self.__datetime_x_days_ago(1)
         last_week = self.__datetime_x_days_ago(7)
@@ -45,16 +55,6 @@ class CustomUser(AbstractUser):
             last_week, today, game
         )
         stats['New personal bests achieved within the last week'] = personal_bests_one_week
-
-        # number of high scores
-        user_scores_list = GameScore.objects.filter(
-            game=game, user=self
-        )
-        num_high_scores = 0
-        for score in user_scores_list:
-            if score.is_high_score:
-                num_high_scores += 1
-        stats['Your high scores'] = num_high_scores
 
         return stats
 
@@ -102,7 +102,7 @@ class CustomUser(AbstractUser):
             dict: A dictionary linking parameter to score
         """
         high_score = 0
-        user_scores_list = GameScore.objects.filter(
+        user_scores_list = GameScore.objects.prefetch_related('parameter_values').filter(
             game=game, user=self, created__lte=end_datetime
         )
 

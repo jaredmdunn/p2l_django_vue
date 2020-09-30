@@ -69,7 +69,7 @@ class GameScore(models.Model):
 
     def __scores_with_same_param_settings(self):
         scores = GameScore.objects.filter(game=self.game)
-        for param_value in self.parameter_values.all():
+        for param_value in self.parameter_values.select_related('parameter').all():
             scores = scores.filter(
                 parameter_values__value=param_value.value,
                 parameter_values__parameter__slug=param_value.parameter.slug
