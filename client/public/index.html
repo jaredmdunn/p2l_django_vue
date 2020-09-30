@@ -1,0 +1,12 @@
+{% extends "_base.html" %}
+
+{% block html %}
+<html lang="en">
+  <head>
+    {% block head %} {{ block.super }} {% endblock %}
+  </head>
+  <body>
+    {% block body %} {{ block.super }} {% endblock %}
+  </body>
+</html>
+{% endblock %}

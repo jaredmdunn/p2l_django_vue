@@ -3,9 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import JsonResponse
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 
 from .models import Game, GameScore, Parameter, ParameterValue
+
+
+class AnagramGameView(TemplateView):
+    template_name = 'games/anagram.html'
 
 
 class GameDetailView(LoginRequiredMixin, DetailView):
