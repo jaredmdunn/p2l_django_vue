@@ -1,0 +1,21 @@
+{% if games.all %}
+  <div class="card mx-auto mb-5 col-md-9">
+    <h1 class="card-header text-center">Games</h1>
+    <div class="card-body row">
+      {% for game in games %}
+        <div class="col-sm">
+          <div class="card mx-auto">
+            <div class="card-body">
+              <h5 class="card-title text-center">{{ game.game }}</h5>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <a href="{% url 'games:game' game.slug %}" class="btn btn-primary">Play now!</a>
+              <a href="{% url 'games:leaderboards' game.slug %}" class="btn btn-primary float-right">See the high scores!</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% else %}
+  <p>No games exist yet.</p>
+{% endif %}
