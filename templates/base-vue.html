@@ -1,0 +1,13 @@
+{% extends "_base.html" %}
+{% block html %}
+<html lang="en">
+  <head>
+    {% block head %} {{ block.super }} {% endblock %}
+    <!-- insert things -->
+  <link href="http://127.0.0.1:8080/js/app.js" rel="preload" as="script"><link href="http://127.0.0.1:8080/js/chunk-vendors.js" rel="preload" as="script"></head>
+  <body>
+    {% block body %} {{ block.super }} {% endblock %}
+    <!-- insert things -->
+  <script type="text/javascript" src="http://127.0.0.1:8080/js/chunk-vendors.js"></script><script type="text/javascript" src="http://127.0.0.1:8080/js/app.js"></script></body>
+</html>
+{% endblock %}
