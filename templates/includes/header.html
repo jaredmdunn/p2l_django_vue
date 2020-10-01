@@ -11,9 +11,6 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'pages:homepage' %}">Home</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'pages:about-us' %}">About Us</a>
-          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="games" role="button" data-toggle="dropdown" aria-expanded="false">
               Games
@@ -24,6 +21,9 @@
               {% show_game_links %}
             </ul>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'pages:about-us' %}">About Us</a>
+          </li>
           {% if user.is_authenticated %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="me" role="button" data-toggle="dropdown" aria-expanded="false">
@@ -33,11 +33,11 @@
                 <li><a class="dropdown-item" href="{% url 'users:my-account' %}">My Account</a></li>
                 <li><a class="dropdown-item" href="{% url 'users:my-scores' 'math-facts' %}">My Scores</a></li>
                 <li><a class="dropdown-item" href="{% url 'users:create-review' %}">Leave a Review</a></li>
-                <li><hr class="dropdown-divider"></li>
+                <li><hr class="dropdown-divider m-0"></li>
                 <li>
                   <form method="post" action="{% url 'account_logout' %}" class="d-flex">
                     {% csrf_token %}
-                    <button class="btn dropdown-item">Log out</button> 
+                    <button class="btn dropdown-item m-0">Log out</button> 
                   </form>
                 </li>
               </ul>
