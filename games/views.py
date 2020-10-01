@@ -19,8 +19,10 @@ class ScoreListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        active_game = Game.objects.get(slug=self.kwargs['slug'])
+        active_game = Game.objects.prefetch_related(
+            'parameters').get(slug=self.kwargs['slug'])
         context['active_game'] = active_game
+        context['current_user'] = self.request.user
 
         game_params = active_game.parameters
         context['game_params'] = game_params.all()
@@ -43,11 +45,28 @@ class ScoreListView(ListView):
                 parameter_values__parameter__slug=param
             )
 
+        # initialize normal leaderboards tab_path
+        tab_path = 'games:leaderboards'
+
+        # if on my-scores page, update tab_path and filter scores by user
+        if '/account' in self.request.path_info:
+            tab_path = 'users:my-scores'
+            scores = scores.filter(user=self.request.user)
+            context['is_my_scores'] = True
+
+        context['tab_path'] = tab_path
+
         scores = scores.prefetch_related('user')
 
         context['scores'] = scores.order_by('-score')[:21]
 
         return context
+
+    # def get_queryset(self):
+    #     qs = GameScore.objects.all()
+    #     if '/my-scores' in self.request.path_info:
+    #         qs = qs.filter(user=self.request.user)
+    #     return qs.prefetch_related('game', 'parameter')
 
 
 @login_required
@@ -91,3 +110,27 @@ def save_score(request, slug):
         'msg': msg,
     }
     return JsonResponse(response)
+
+
+# class ScoreListView(ListView):
+#     model = Game
+#     template_name = 'games/score_list.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+
+#         # order_fields, order_key, direction = self.get_order_settings()
+
+#         context['active_game'] = Game.objects.get(slug=self.kwargs['slug'])
+#         context['current_user'] = self.request.user
+
+#         return context
+
+#     def get_queryset(self):
+#     #     ordering = self.get_ordering()
+#         qs = GameScore.objects.all()
+
+#     #     if '/my-scores' in self.request.path_info:
+#     #         qs = qs.filter(user=self.request.user)
+
+#         return qs

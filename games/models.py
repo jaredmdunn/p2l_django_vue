@@ -69,7 +69,7 @@ class GameScore(models.Model):
 
     def __scores_with_same_param_settings(self):
         scores = GameScore.objects.filter(game=self.game)
-        for param_value in self.parameter_values.all():
+        for param_value in self.parameter_values.select_related('parameter').all():
             scores = scores.filter(
                 parameter_values__value=param_value.value,
                 parameter_values__parameter__slug=param_value.parameter.slug
@@ -115,10 +115,6 @@ class ParameterValue(models.Model):
     slug = models.SlugField(max_length=50, unique=True,
                             null=False, editable=False)
     ordering_name = models.CharField(max_length=50, editable=False, null=False)
-
-    # @property
-    # def attribute_value(self):
-    #     return self.value.lower()
 
     def save(self, *args, **kwargs):
         if not self.slug:

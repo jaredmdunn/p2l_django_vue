@@ -5,14 +5,20 @@
 {% block title %}Leaderboards{% endblock %}
 
 {% block main %}
-  <h1>Leaderboards</h1>
+  {% if is_my_scores %}
+    <h1>My Scores</h1>
+    {% show_stats current_user active_game %}
+  {% else %}
+    <h1>Leaderboards</h1>
+  {% endif %}
+
   <ul class="nav nav-tabs">
     {% for game in game_list %}
       <li class="nav-item">
         <a class="nav-link
         {% if active_game.game == game.game %}
           active
-        {% endif %}" href="{% url 'games:leaderboards' game.slug %}">{{ game.game }}</a>  
+        {% endif %}" href="{% url tab_path game.slug %}">{{ game.game }}</a>  
       </li>
     {% endfor %}
   </ul>
@@ -37,7 +43,9 @@
   <table class="table table-responsive table-striped">
     <thead>
       <th>Place</th>
-      <th>User</th>
+      {% if not is_my_scores %}
+        <th>User</th>
+      {% endif %}
       <th>Score</th>
       <th>Date</th>
     </thead>
@@ -46,12 +54,13 @@
       {% for score in scores %}
         <tr>
           <td>{{ forloop.counter }}</td>
-          <td>{{ score.user }}</td>
+          {% if not is_my_scores %}
+            <td>{{ score.user }}</td>
+          {% endif %}
           <td>{{ score.score }}</td>
           <td>{{ score.created }}</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
-
 {% endblock %}
