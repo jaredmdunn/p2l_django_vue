@@ -4,6 +4,13 @@ from django import template
 
 register = template.Library()
 
+
+@register.inclusion_tag('common/game_boxes.html')
+def show_game_boxes():
+    games = Game.objects.all()
+    return {'games': games}
+
+
 @register.inclusion_tag('common/game_links.html')
 def show_game_links():
     games = Game.objects.all()
