@@ -20,7 +20,10 @@ class Game(models.Model):
         parameters = self.parameters
 
         for param in parameters.all():
-            param_value_dict[param.slug] = param.default_value.slug
+            if param.default_value:
+                param_value_dict[param.slug] = param.default_value.slug
+            else:
+                param_value_dict[param.slug] = param.values.all()[0].slug
 
         return param_value_dict
 
@@ -66,7 +69,7 @@ class GameScore(models.Model):
 
     def __scores_with_same_param_settings(self):
         scores = GameScore.objects.filter(game=self.game)
-        for param_value in self.parameter_values.all():
+        for param_value in self.parameter_values.select_related('parameter').all():
             scores = scores.filter(
                 parameter_values__value=param_value.value,
                 parameter_values__parameter__slug=param_value.parameter.slug
@@ -101,26 +104,36 @@ class Parameter(models.Model):
 
 
 class ParameterValue(models.Model):
-    value = models.CharField(max_length=50,
-                             help_text="Value should be uppercase word.")
+    value = models.CharField(
+        max_length=50,
+        help_text="Value should be uppercase word. Numbers must be less than 10 digits \
+            without chars to order properly."
+    )
     parameter = models.ForeignKey(
         Parameter, on_delete=models.CASCADE, related_name='values'
     )
     slug = models.SlugField(max_length=50, unique=True,
-                            null=True, editable=False)
-
-    # @property
-    # def attribute_value(self):
-    #     return self.value.lower()
+                            null=False, editable=False)
+    ordering_name = models.CharField(max_length=50, editable=False, null=False)
 
     def save(self, *args, **kwargs):
         if not self.slug:
             value = self.value
             self.slug = unique_slug(value, type(self))
+        if not self.ordering_name:
+            self.ordering_name = self.__generate_ordering_name()
         super().save(*args, **kwargs)
+
+    def __generate_ordering_name(self):
+        if self.value.isdigit():
+            value = int(self.value)
+            value = f'{value:09d}'
+        else:
+            value = self.value
+        return value
 
     def __str__(self):
         return self.parameter.parameter + ': ' + self.value
 
     class Meta:
-        ordering = ['parameter', 'value']
+        ordering = ['parameter', 'ordering_name']

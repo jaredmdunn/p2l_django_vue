@@ -7,9 +7,11 @@
 {% block main %}
   {% if is_my_scores %}
     <h1>My Scores</h1>
+    {% show_stats current_user active_game %}
   {% else %}
     <h1>Leaderboards</h1>
   {% endif %}
+
   <ul class="nav nav-tabs">
     {% for game in game_list %}
       <li class="nav-item">
@@ -61,5 +63,4 @@
       {% endfor %}
     </tbody>
   </table>
-
 {% endblock %}
