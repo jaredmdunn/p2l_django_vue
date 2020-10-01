@@ -10,6 +10,7 @@ from common.utils.text import unique_slug
 
 class Game(models.Model):
     game = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
     slug = models.SlugField(max_length=50, unique=True,
                             null=False, editable=False)
 

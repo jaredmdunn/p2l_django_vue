@@ -1,0 +1,37 @@
+{% load common_tags %}
+<footer class="fixed-bottom bg-light row">
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <span class="navbar-text">&copy;{% now "Y" %} Play2Learn</span>
+      <ul class="nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link btn btn-outline-dark" href="https://instagram.com">
+            <i class="fab fa-instagram"></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-outline-dark" href="https://twitter.com">
+            <i class="fab fa-twitter-square"></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-outline-dark" href="https://facebook.com">
+            <i class="fab fa-facebook-square"></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-outline-dark" href="{% url 'pages:contact-us' %}">
+            <i class="fas fa-envelope-square"></i>
+          </a>
+        </li>
+        {% if user.is_staff %}
+          <li class="nav-item">
+            <a class="nav-link btn btn-outline-dark" href="/admin/">
+              Admin
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+</footer>
