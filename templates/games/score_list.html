@@ -2,7 +2,13 @@
 {% load common_filters %}
 {% load common_tags %}
 
-{% block title %}Leaderboards{% endblock %}
+{% block title %}
+  {% if is_my_scores %}
+    My Scores
+  {% else %}
+    Leaderboards
+  {% endif %}
+{% endblock %}
 
 {% block main %}
   {% if is_my_scores %}
