@@ -8,6 +8,10 @@ from django.views.generic import DetailView, ListView, TemplateView
 from .models import Game, GameScore, Parameter, ParameterValue
 
 
+class AnagramGameView(TemplateView):
+    template_name = 'games/anagram-hunt.html'
+
+
 class GameDetailView(LoginRequiredMixin, DetailView):
     model = Game
 
