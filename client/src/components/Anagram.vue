@@ -25,7 +25,7 @@
       <transition name="slide-right">
         <template v-if="timeLeft > 0">
           <div>
-            <div class="row border-bottom mt-5" id="scoreboard">
+            <div class="row border-bottom mt-5">
               <div class="col px-3 text-left">
                 <Score :score="score" />
               </div>
@@ -33,7 +33,7 @@
                 <Timer :timeLeft="timeLeft" />
               </div>
             </div>
-            <div :class="equationClass" id="equation">
+            <div>
               <Word :word="wordQuestion" />
             </div>
             <div class="row">

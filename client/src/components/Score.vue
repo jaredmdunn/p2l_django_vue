@@ -3,10 +3,10 @@
 </template>
 
 <script>
-export default {
+  export default {
     name: 'Score',
     props: {
-      score: String,
+      score: Number,
     }
-}
+  }
 </script>

@@ -3,10 +3,10 @@
 </template>
 
 <script>
-export default {
-  name: 'Timer',
-  props: {
-    timeLeft: String,
+  export default {
+    name: 'Timer',
+    props: {
+      timeLeft: Number,
+    }
   }
-}
 </script>
