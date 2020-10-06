@@ -13,6 +13,7 @@
             <strong class="big">You Got</strong>
             <div class="huge">{{score}}</div>
             <strong class="big">Anagrams</strong>
+            <div id="ajax-msg">{{ ajaxMsg }}</div>
             <button class="btn btn-primary form-control m-1" @click="restart()">
               Play Again with Same Settings
             </button>
@@ -85,13 +86,16 @@
         input: '',
         answered: false,
         score: 0,
-        gameLength: 1000,
+        gameLength: 60,
         timeLeft: 0,
         answerSetIndex: 0,
         pastAnswerSetIndices: [],
         finishedAnswerSetIndices: [],
         finishedWords: {}, // answerSetIndex to array of words
         pastWordQuestions: {}, // answerSetIndex to wordQuestion
+        ajaxURL: "/games/anagram-hunt/save-score/",
+        csrfToken: document.cookie.split('; ').find(row => row.startsWith('csrftoken')).split('=')[1],
+        ajaxMsg: "",
       }
     },
     methods: {
@@ -174,6 +178,7 @@
             if (this.timeLeft === 0) {
               clearInterval(this.timer);
               window.removeEventListener('keyup', this.handleKeyUp);
+              this.saveScore(this.wordLength, this.score)
             }
           }, 1000)
         }
@@ -216,6 +221,26 @@
           this.pastWordQuestions[this.answerSetIndex] = newWordQuestion;
           return newWordQuestion;
         }
+      },
+      saveScore(wordLength, score) {
+        const data = {
+          "parameters": {
+            "word-length": wordLength,
+          },
+          "score": score,
+        }
+        fetch(this.ajaxURL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": this.csrfToken
+            },
+            body: JSON.stringify(data),
+          })
+          .then(response => response.json())
+          .then(data => {
+            this.ajaxMsg = data.msg;
+          });
       },
     },
     computed: {
