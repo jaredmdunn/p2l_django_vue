@@ -34,15 +34,18 @@
               </div>
             </div>
             <div>
-              <Word :word="wordQuestion" />
+              <Word :word="wordQuestion()" />
             </div>
             <div class="row">
               <div class="col">
                 <input v-model="input" placeholder="type here">
               </div>
+              <div class="col">
+                <button @click="newWord()" class="btn btn-success">New Word</button>
+              </div>
             </div>
             <ol>
-              <li v-for="item in finishedWords" :key="item">{{item}}</li>
+              <li v-for="item in finishedWords[answerSetIndex]" :key="item">{{item}}</li>
             </ol>
           </div>
         </template>
@@ -87,7 +90,8 @@
         answerSetIndex: 0,
         pastAnswerSetIndices: [],
         finishedAnswerSetIndices: [],
-        finishedWords: [],
+        finishedWords: {}, // answerSetIndex to array of words
+        pastWordQuestions: {}, // answerSetIndex to wordQuestion
       }
     },
     methods: {
@@ -100,39 +104,31 @@
       },
       restart() {
         this.score = 0;
+        this.pastAnswerSetIndices = [];
+        this.finishedAnswerSetIndices = [];
+        this.finishedWords = {};
+        this.pastWordQuestions = {};
         this.startTimer();
         this.newWord();
       },
-      // setInput(value) {
-      //   this.input += String(value);
-      //   this.input = String(Number(this.input));
-      //   this.answered = this.checkAnswer(this.input, this.operation, this.operands);
-
-      //   if (this.answered) {
-      //     setTimeout(this.newWord, 300);
-      //     this.score++;
-      //   }
-      // },
       clear() {
         this.input = '';
       },
       correctWord() {
         this.input = '';
         this.answered = false;
-        // this.setAnswerSetIndex
       },
       newWord() {
         this.input = '';
         this.answered = false;
-        this.finishedWords = [];
         if (this.pastAnswerSetIndices.length == this.setLength) { // if all words have been seen
           this.answerSetIndex =
-            this.pastAnswerSetIndices.findIndex(val => val == this.answerSetIndex) + 1 // advance to next word in list
-          if (this.answerSetIndex > this.answerSet.length - 1) {
-            this.answerSetIndex = 0 // reset if index went past length of set
+            this.pastAnswerSetIndices.findIndex(val => val == this.answerSetIndex) + 1; // advance to next word in list
+          if (this.answerSetIndex > (this.answerSet.length - 1)) {
+            this.answerSetIndex = 0; // reset if index went past length of set
           }
         } else {
-          this.setAnswerSetIndex()
+          this.setAnswerSetIndex();
         }
       },
       checkAnswer(userAnswer, wordQuestion) {
@@ -140,12 +136,29 @@
           return false; // User hasn't answered
         } else if (userAnswer == wordQuestion) {
           return false; // same as prompted word
-        } else if (this.finishedWords.includes(userAnswer)) {
-          return false; // already gotten
-        } else if (this.answerSet.includes(userAnswer)) {
-          this.finishedWords.push(userAnswer) // add to previously gotten answers
-          return true;
+        } else if (this.answerSetIndex in this.finishedWords) {
+          if (this.finishedWords[this.answerSetIndex].includes(userAnswer)) {
+            return false;
+          } else if (this.answerSet.includes(userAnswer)) {
+            this.finishedWords[this.answerSetIndex].push(userAnswer);
+            return true;
+          }
+        } else {
+          if (this.answerSet.includes(userAnswer)) {
+            this.finishedWords[this.answerSetIndex] = [userAnswer];
+            return true;
+          }
         }
+        // else if (this.finishedWords[this.answerSetIndex].includes(userAnswer)) {
+        //   return false; // already gotten
+        // } else if (this.answerSet.includes(userAnswer)) {
+        //   if (this.answerSetIndex in this.finishedWords) {
+        //     this.finishedWords[this.answerSetIndex].push(userAnswer);
+        //   } else {
+        //     this.finishedWords[this.answerSetIndex] = [userAnswer];
+        //   }
+        //   return true;
+        // }
       },
       startTimer() {
         window.addEventListener('keyup', this.handleKeyUp)
@@ -156,7 +169,7 @@
             this.timeLeft--;
             if (this.timeLeft === 0) {
               clearInterval(this.timer);
-              window.removeEventListener('keyup', this.handleKeyUp)
+              window.removeEventListener('keyup', this.handleKeyUp);
             }
           }, 1000)
         }
@@ -164,12 +177,11 @@
       handleKeyUp(e) {
         e.preventDefault(); // prevent the normal behavior of the key
         if (e.keyCode === 13) { // Enter
-          this.answered = this.checkAnswer(this.input, this.wordQuestion)
-
+          this.answered = this.checkAnswer(this.input.trim(), this.wordQuestion());
           if (this.answered) {
-            if (this.finishedWords.length == (this.answerSet.length - 1)) { // when word is finished
+            if (this.finishedWords[this.answerSetIndex].length == (this.answerSet.length - 1)) { // when word is finished
               // this.pastAnswerSetIndices.remove
-              this.finishedAnswerSetIndices.push(this.answerSetIndex)
+              this.finishedAnswerSetIndices.push(this.answerSetIndex);
               if (this.finishedAnswerSetIndices.length == this.setLength) { // when finished with all words
                 this.timeLeft = 1;
               } else {
@@ -185,39 +197,38 @@
       // should this return a value? or okay to set values behind the scenes
       setAnswerSetIndex() { // computes random index for set of anagrams with given word length
         let newIndex = getRandomInt(this.setLength)
-        while (this.pastAnswerSetIndices.includes(newIndex))
-          newIndex = getRandomInt(this.setLength)
-
-        this.answerSetIndex = newIndex
-        this.pastAnswerSetIndices.push(this.answerSetIndex)
+        while (this.pastAnswerSetIndices.includes(newIndex)) {
+          newIndex = getRandomInt(this.setLength);
+        }
+        this.answerSetIndex = newIndex;
+        this.pastAnswerSetIndices.push(this.answerSetIndex);
+      },
+      wordQuestion() {
+        if (this.answerSetIndex in this.pastWordQuestions) {
+          return this.pastWordQuestions[this.answerSetIndex];
+        } else {
+          const answerIndex = getRandomInt(this.answerSet.length);
+          let newWordQuestion = this.answerSet[answerIndex];
+          this.pastWordQuestions[this.answerSetIndex] = newWordQuestion;
+          return newWordQuestion;
+        }
       },
     },
     computed: {
       setLength: function() {
-        return anagrams[this.wordLength].length
+        return anagrams[this.wordLength].length;
       },
       numbers: function() {
         let numbers = [];
         for (let number = 5; number <= 8; number++) {
-          numbers.push([number, number])
+          numbers.push([number, number]);
         }
         return numbers;
       },
-      wordQuestion: function() {
-        const answerIndex = getRandomInt(this.answerSet.length)
-        return this.answerSet[answerIndex]
-      },
       answerSet: function() {
-        const answerSet = anagrams[this.wordLength][this.answerSetIndex]
-        return answerSet
+        const answerSet = anagrams[this.wordLength][this.answerSetIndex];
+        return answerSet;
       }
-      // equationClass: function() {
-      //   if (this.answered) {
-      //     return 'row text-primary my-2 fade';
-      //   } else {
-      //     return 'row text-seconday my-2';
-      //   }
-      // }
     },
   }
 </script>
