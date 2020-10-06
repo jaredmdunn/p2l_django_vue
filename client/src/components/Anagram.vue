@@ -121,11 +121,15 @@
       newWord() {
         this.input = '';
         this.answered = false;
+        const maxIndex = this.setLength - 1;
         if (this.pastAnswerSetIndices.length == this.setLength) { // if all words have been seen
-          this.answerSetIndex =
+          // this.answerSetIndex =
+          let newIndex =
             this.pastAnswerSetIndices.findIndex(val => val == this.answerSetIndex) + 1; // advance to next word in list
-          if (this.answerSetIndex > (this.answerSet.length - 1)) {
-            this.answerSetIndex = 0; // reset if index went past length of set
+          if (newIndex > maxIndex) {
+            this.answerSetIndex = this.pastAnswerSetIndices[0]; // reset if index went past length of set
+          } else {
+            this.answerSetIndex = this.pastAnswerSetIndices[newIndex];
           }
         } else {
           this.setAnswerSetIndex();
