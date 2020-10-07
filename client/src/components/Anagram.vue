@@ -84,7 +84,7 @@
         screen: 'config',
         buttons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
         input: '',
-        answered: false,
+        answered: false, // only used in handleKeyUp and is recomputed every time
         score: 0,
         gameLength: 60,
         timeLeft: 0,
@@ -107,16 +107,14 @@
         this.startTimer();
       },
       restart() {
+        this.input = '';
+        this.answered = false;
         this.score = 0;
         this.pastAnswerSetIndices = [];
         this.finishedAnswerSetIndices = [];
         this.finishedWords = {};
         this.pastWordQuestions = {};
         this.startTimer();
-        this.newWord();
-      },
-      clear() {
-        this.input = '';
       },
       correctWord() {
         this.input = '';
@@ -127,14 +125,19 @@
         this.answered = false;
         const maxIndex = this.setLength - 1;
         if (this.pastAnswerSetIndices.length == this.setLength) { // if all words have been seen
-          // this.answerSetIndex =
           let newIndex =
             this.pastAnswerSetIndices.findIndex(val => val == this.answerSetIndex) + 1; // advance to next word in list
-          if (newIndex > maxIndex) {
-            this.answerSetIndex = this.pastAnswerSetIndices[0]; // reset if index went past length of set
-          } else {
-            this.answerSetIndex = this.pastAnswerSetIndices[newIndex];
+
+          // while new index is in finishedAnswerSetIndices (or beyond bounds), cycle newIndex
+          console.log('');
+          while (this.finishedAnswerSetIndices.includes(this.pastAnswerSetIndices[newIndex]) || newIndex > maxIndex) {
+            newIndex++;
+            if (newIndex > maxIndex) {
+              newIndex = 0; // reset index if it went past length of set
+            }
+            console.log('new index: ', newIndex);
           }
+          this.answerSetIndex = this.pastAnswerSetIndices[newIndex];
         } else {
           this.setAnswerSetIndex();
         }
@@ -157,16 +160,6 @@
             return true;
           }
         }
-        // else if (this.finishedWords[this.answerSetIndex].includes(userAnswer)) {
-        //   return false; // already gotten
-        // } else if (this.answerSet.includes(userAnswer)) {
-        //   if (this.answerSetIndex in this.finishedWords) {
-        //     this.finishedWords[this.answerSetIndex].push(userAnswer);
-        //   } else {
-        //     this.finishedWords[this.answerSetIndex] = [userAnswer];
-        //   }
-        //   return true;
-        // }
       },
       startTimer() {
         window.addEventListener('keyup', this.handleKeyUp)
@@ -203,7 +196,6 @@
           }
         }
       },
-      // should this return a value? or okay to set values behind the scenes
       setAnswerSetIndex() { // computes random index for set of anagrams with given word length
         let newIndex = getRandomInt(this.setLength)
         while (this.pastAnswerSetIndices.includes(newIndex)) {
@@ -257,7 +249,7 @@
       answerSet: function() {
         const answerSet = anagrams[this.wordLength][this.answerSetIndex];
         return answerSet;
-      }
+      },
     },
   }
 </script>
