@@ -1,0 +1,5 @@
+{% if page == 'my-scores' %}
+  <li><a class="dropdown-item" href="{% url 'users:my-scores' first_game_slug %}">My Scores</a></li>
+{% elif page == 'leaderboards' %}
+  <li><a class="dropdown-item" href="{% url 'games:leaderboards' first_game_slug %}">Leaderboards</a></li>
+{% endif %}

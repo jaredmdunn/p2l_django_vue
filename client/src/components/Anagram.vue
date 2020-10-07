@@ -86,7 +86,7 @@
         input: '',
         answered: false, // only used in handleKeyUp and is recomputed every time
         score: 0,
-        gameLength: 60,
+        gameLength: 2,
         timeLeft: 0,
         answerSetIndex: 0,
         pastAnswerSetIndices: [],

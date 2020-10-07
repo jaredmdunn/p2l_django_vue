@@ -37,10 +37,10 @@
             </select>
         </label>
       {% endfor %}
-      <button type="submit">Submit</button>
+      <button type="submit">Go</button>
     </form>
   </div>
-  <table class="table table-responsive table-striped">
+  <table id="score-table" class="table table-responsive table-striped">
     <thead>
       <th>Place</th>
       {% if not is_my_scores %}
