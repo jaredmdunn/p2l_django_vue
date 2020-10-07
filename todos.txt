@@ -1,0 +1,4 @@
+Make my scores and leaderboard default to first alphabetical game tab
+My scores footer cuts off leaderboard bottom
+Contact us not functional
+Anagram game can cycle back to words that were completed
