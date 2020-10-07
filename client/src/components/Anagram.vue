@@ -86,7 +86,7 @@
         input: '',
         answered: false,
         score: 0,
-        gameLength: 60,
+        gameLength: 2,
         timeLeft: 0,
         answerSetIndex: 0,
         pastAnswerSetIndices: [],
