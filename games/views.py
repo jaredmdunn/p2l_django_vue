@@ -8,6 +8,10 @@ from django.views.generic import DetailView, ListView, TemplateView
 from .models import Game, GameScore, Parameter, ParameterValue
 
 
+class AnagramGameView(LoginRequiredMixin, TemplateView):
+    template_name = 'games/anagram-hunt.html'
+
+
 class GameDetailView(LoginRequiredMixin, DetailView):
     model = Game
 
@@ -41,7 +45,7 @@ class ScoreListView(ListView):
         # filters the scores (requires multiple filters because ManyToManyField)
         for param, value in params.items():
             scores = scores.filter(
-                parameter_values__value__iexact=value,
+                parameter_values__slug__iexact=value,
                 parameter_values__parameter__slug=param
             )
 
@@ -96,7 +100,8 @@ def save_score(request, slug):
 
         for key, value in param_data.items():
             param = Parameter.objects.get(slug=key)
-            param_value = param.values.get(value__iexact=value)
+            param_value = param.values.get(
+                value__iexact=value, parameter=param)
             new_score.parameter_values.add(param_value)
 
         if new_score.is_high_score:

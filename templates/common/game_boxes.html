@@ -5,7 +5,7 @@
           <div class="card col-sm p-0 m-1">
             <div class="card-body">
               <h5 class="card-title text-center">{{ game.game }}</h5>
-              <p class="card-text">{{ game.description }}</p>
+              <p class="card-text text-center">{{ game.description }}</p>
             </div>
             <div class="card-footer d-flex justify-content-evenly">
               <a href="{% url 'games:game' game.slug %}" class="btn btn-success m-1">Play now!</a>
