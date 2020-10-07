@@ -123,18 +123,18 @@ export const anagrams = {
     ]
   ],
   8: [
-    // [
-    //   "parroted",
-    //   "predator",
-    //   "prorated",
-    //   "teardrop"
-    // ],
-    // [
-    //   "repaints",
-    //   "painters",
-    //   "pantries",
-    //   "pertains"
-    // ],
+    [
+      "parroted",
+      "predator",
+      "prorated",
+      "teardrop"
+    ],
+    [
+      "repaints",
+      "painters",
+      "pantries",
+      "pertains"
+    ],
     [
       "restrain",
       "retrains",
