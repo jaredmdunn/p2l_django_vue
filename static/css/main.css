@@ -31,6 +31,10 @@ footer a i {
   width: 35rem;
 }
 
+#score-table {
+  margin-bottom: 5rem;
+}
+
 /* GAMES STYLES */
 #solution,
 #number-pad,
