@@ -9,6 +9,7 @@ from .models import Review
 
 BIRTH_YEAR_CHOICES = range(1915, datetime.now().year)
 
+
 class SignupForm(forms.Form):
     first_name = forms.CharField(max_length=50, required=False)
     last_name = forms.CharField(max_length=50, required=False)
@@ -18,9 +19,10 @@ class SignupForm(forms.Form):
         user.last_name = self.cleaned_data['last_name']
         user.save()
 
+
 class CustomUserChangeForm(UserChangeForm):
     password = None
-    
+
     class Meta:
         model = get_user_model()
         fields = (
@@ -31,9 +33,10 @@ class CustomUserChangeForm(UserChangeForm):
                 attrs={
                     'style': 'width: 31%; display: inline-block; margin: 0 1%'
                 },
-                years = BIRTH_YEAR_CHOICES
+                years=BIRTH_YEAR_CHOICES
             )
         }
+
 
 class ReviewForm(forms.ModelForm):
     class Meta:
@@ -41,8 +44,9 @@ class ReviewForm(forms.ModelForm):
         fields = ['review', 'anonymous']
         widgets = {
             'review': forms.Textarea(
-                attrs={'cols': 50, 'rows': 5, 'autofocus': True, 'placeholder': 'Hello'}
-            ) # cols may not do anything
+                attrs={'cols': 50, 'rows': 5, 'autofocus': True,
+                       'placeholder': 'Write your review!'}
+            )  # cols may not do anything
         }
         labels = {
             'review': 'Leave a review!'
@@ -50,4 +54,3 @@ class ReviewForm(forms.ModelForm):
         help_texts = {
             'anonymous': 'Check this if you don\'t want your username displayed',
         }
-
