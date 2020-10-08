@@ -11,10 +11,14 @@ from allauth.account.views import PasswordChangeView
 from .forms import CustomUserChangeForm, ReviewForm
 from .models import Review
 
+
 class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    """The custom password change view"""
     success_url = reverse_lazy('my-account')
 
+
 class MyAccountPageView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    """The my account page view"""
     model = get_user_model()
     form_class = CustomUserChangeForm
     success_message = 'Update Successful'
@@ -23,7 +27,9 @@ class MyAccountPageView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     def get_object(self):
         return self.request.user
 
+
 class ReviewCreateView(LoginRequiredMixin, CreateView):
+    """The review create view"""
     model = Review
     form_class = ReviewForm
 

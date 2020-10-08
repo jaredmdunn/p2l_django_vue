@@ -2,6 +2,7 @@ from django import forms
 
 
 class ContactUsForm(forms.Form):
+    """The Contact Us Form"""
     first_name = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'First Name'})
     )

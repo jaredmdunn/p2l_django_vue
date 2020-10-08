@@ -7,9 +7,11 @@ from .models import Review
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
+    """The custom user admin"""
     model = CustomUser
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
+    """The review admin"""
     model = Review
     list_display = ['user', 'review', 'created', 'featured']

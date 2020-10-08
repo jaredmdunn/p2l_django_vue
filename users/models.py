@@ -10,6 +10,9 @@ from games.models import Game, Parameter, GameScore
 
 
 class CustomUser(AbstractUser):
+    """The custom user model"""
+
+    # add a date of birth field
     dob = models.DateField(
         verbose_name="Date of Birth", null=True, blank=True
     )
@@ -18,22 +21,27 @@ class CustomUser(AbstractUser):
 # high score
 # number improved within time frame
 
+# TODO: remove stats --> replace them with showing leaderboard rank of scores in my scores
     def stats(self, game):
-        # check if user has any scores for the game; if not, display message
-        # for game in Game.objects.all():
-        #     print(game.game_scores)
-        #     # print(Game.game_scores.all)
-        #     print('\n\n\n\n\n')
-        # if Game.objects.game_scores.filter(user=self):
-        #     pass
+        """Calculate that user's stats for a specific game
 
+        Args:
+            game: The game for which the stats should be calculated
+
+        Returns:
+            dict: A dictionary of all the stats
+        """
+        # initialize stats as an empty dict
         stats = {}
 
-        # number of high scores
+        # get all of the users scores for the specified game
         user_scores_list = GameScore.objects.prefetch_related('game').filter(
             game=game, user=self
         )
+        # initialize num_high_scores as 0
         num_high_scores = 0
+        # check every score to see if it is a high score
+        # if it is, increments num_high_scores
         for score in user_scores_list:
             if score.is_high_score:
                 num_high_scores += 1
@@ -128,6 +136,7 @@ class CustomUser(AbstractUser):
 
 
 class Review(models.Model):
+    """The review model -- allows for the creation and handling of site reviews"""
     anonymous = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     featured = models.BooleanField(default=False)
