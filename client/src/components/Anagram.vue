@@ -11,7 +11,7 @@
           <div>
             <h2>Time's Up!</h2>
             <strong class="big">You Got</strong>
-            <div class="huge">{{score}}</div>
+            <div class="huge">{{ score }}</div>
             <strong class="big">Anagrams</strong>
             <div id="ajax-msg">{{ ajaxMsg }}</div>
             <button class="btn btn-primary form-control m-1" @click="restart()">
@@ -39,14 +39,18 @@
             </div>
             <div class="row">
               <div class="col">
-                <input v-model="input" placeholder="type here">
+                <input v-model="input" placeholder="type here" />
               </div>
               <div class="col">
-                <button @click="newWord()" class="btn btn-success">New Word</button>
+                <button @click="newWord()" class="btn btn-success">
+                  New Word
+                </button>
               </div>
             </div>
             <ol>
-              <li v-for="item in finishedWords[answerSetIndex]" :key="item">{{item}}</li>
+              <li v-for="item in finishedWords[answerSetIndex]" :key="item">
+                {{ item }}
+              </li>
             </ol>
           </div>
         </template>
@@ -56,21 +60,20 @@
 </template>
 
 <script>
-  import SelectInput from './SelectInput';
-  import PlayButton from './PlayButton';
-  import Score from './Score'
-  import Timer from './Timer'
-  import Word from './Word'
+  import SelectInput from "./SelectInput";
+  import PlayButton from "./PlayButton";
+  import Score from "./Score";
+  import Timer from "./Timer";
+  import Word from "./Word";
   import {
     anagrams
-  } from '../helpers/anagrams'
+  } from "../helpers/anagrams";
   import {
     getRandomInt
-  } from '../helpers/helpers'
-
+  } from "../helpers/helpers";
 
   export default {
-    name: 'Anagram',
+    name: "Anagram",
     components: {
       SelectInput,
       PlayButton,
@@ -80,10 +83,10 @@
     },
     data: function() {
       return {
-        wordLength: '5',
-        screen: 'config',
+        wordLength: "5",
+        screen: "config",
         buttons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
-        input: '',
+        input: "",
         answered: false, // only used in handleKeyUp and is recomputed every time
         score: 0,
         gameLength: 2,
@@ -94,9 +97,12 @@
         finishedWords: {}, // answerSetIndex to array of words
         pastWordQuestions: {}, // answerSetIndex to wordQuestion
         ajaxURL: "/games/anagram-hunt/save-score/",
-        csrfToken: document.cookie.split('; ').find(row => row.startsWith('csrftoken')).split('=')[1],
+        csrfToken: document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("csrftoken"))
+          .split("=")[1],
         ajaxMsg: "",
-      }
+      };
     },
     methods: {
       config() {
@@ -107,7 +113,7 @@
         this.startTimer();
       },
       restart() {
-        this.input = '';
+        this.input = "";
         this.answered = false;
         this.score = 0;
         this.pastAnswerSetIndices = [];
@@ -117,25 +123,31 @@
         this.startTimer();
       },
       correctWord() {
-        this.input = '';
+        this.input = "";
         this.answered = false;
       },
       newWord() {
-        this.input = '';
+        this.input = "";
         this.answered = false;
         const maxIndex = this.setLength - 1;
-        if (this.pastAnswerSetIndices.length == this.setLength) { // if all words have been seen
+        if (this.pastAnswerSetIndices.length === this.setLength) {
+          // if all words have been seen
           let newIndex =
-            this.pastAnswerSetIndices.findIndex(val => val == this.answerSetIndex) + 1; // advance to next word in list
+            this.pastAnswerSetIndices.findIndex(
+              (val) => val === this.answerSetIndex
+            ) + 1; // advance to next word in list
 
           // while new index is in finishedAnswerSetIndices (or beyond bounds), cycle newIndex
-          console.log('');
-          while (this.finishedAnswerSetIndices.includes(this.pastAnswerSetIndices[newIndex]) || newIndex > maxIndex) {
+          while (
+            this.finishedAnswerSetIndices.includes(
+              this.pastAnswerSetIndices[newIndex]
+            ) ||
+            newIndex > maxIndex
+          ) {
             newIndex++;
             if (newIndex > maxIndex) {
               newIndex = 0; // reset index if it went past length of set
             }
-            console.log('new index: ', newIndex);
           }
           this.answerSetIndex = this.pastAnswerSetIndices[newIndex];
         } else {
@@ -143,9 +155,10 @@
         }
       },
       checkAnswer(userAnswer, wordQuestion) {
+        // switch else cases to separate if statements
         if (!userAnswer) {
           return false; // User hasn't answered
-        } else if (userAnswer == wordQuestion) {
+        } else if (userAnswer === wordQuestion) {
           return false; // same as prompted word
         } else if (this.answerSetIndex in this.finishedWords) {
           if (this.finishedWords[this.answerSetIndex].includes(userAnswer)) {
@@ -162,29 +175,38 @@
         }
       },
       startTimer() {
-        window.addEventListener('keyup', this.handleKeyUp)
+        window.addEventListener("keyup", this.handleKeyUp);
         this.timeLeft = this.gameLength;
-        this.setAnswerSetIndex()
-        if (this.timeLeft > 0) {
+        this.setAnswerSetIndex();
+        if (this.timeLeft) {
           this.timer = setInterval(() => {
             this.timeLeft--;
-            if (this.timeLeft === 0) {
+            if (!this.timeLeft) {
               clearInterval(this.timer);
-              window.removeEventListener('keyup', this.handleKeyUp);
-              this.saveScore(this.wordLength, this.score)
+              window.removeEventListener("keyup", this.handleKeyUp);
+              this.saveScore(this.wordLength, this.score);
             }
-          }, 1000)
+          }, 1000);
         }
       },
       handleKeyUp(e) {
         e.preventDefault(); // prevent the normal behavior of the key
-        if (e.keyCode === 13) { // Enter
-          this.answered = this.checkAnswer(this.input.trim(), this.wordQuestion());
+        if (e.keyCode === 13) {
+          // Enter
+          this.answered = this.checkAnswer(
+            this.input.trim(),
+            this.wordQuestion()
+          );
           if (this.answered) {
-            if (this.finishedWords[this.answerSetIndex].length == (this.answerSet.length - 1)) { // when word is finished
+            if (
+              this.finishedWords[this.answerSetIndex].length ==
+              this.answerSet.length - 1
+            ) {
+              // when word is finished
               // this.pastAnswerSetIndices.remove
               this.finishedAnswerSetIndices.push(this.answerSetIndex);
-              if (this.finishedAnswerSetIndices.length == this.setLength) { // when finished with all words
+              if (this.finishedAnswerSetIndices.length === this.setLength) {
+                // when finished with all words
                 this.timeLeft = 1;
               } else {
                 setTimeout(this.newWord(), 300);
@@ -196,8 +218,9 @@
           }
         }
       },
-      setAnswerSetIndex() { // computes random index for set of anagrams with given word length
-        let newIndex = getRandomInt(this.setLength)
+      setAnswerSetIndex() {
+        // computes random index for set of anagrams with given word length
+        let newIndex = getRandomInt(this.setLength);
         while (this.pastAnswerSetIndices.includes(newIndex)) {
           newIndex = getRandomInt(this.setLength);
         }
@@ -216,21 +239,21 @@
       },
       saveScore(wordLength, score) {
         const data = {
-          "parameters": {
+          parameters: {
             "word-length": wordLength,
           },
-          "score": score,
-        }
+          score: score,
+        };
         fetch(this.ajaxURL, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-CSRFToken": this.csrfToken
+              "X-CSRFToken": this.csrfToken,
             },
             body: JSON.stringify(data),
           })
-          .then(response => response.json())
-          .then(data => {
+          .then((response) => response.json())
+          .then((data) => {
             this.ajaxMsg = data.msg;
           });
       },
@@ -251,7 +274,7 @@
         return answerSet;
       },
     },
-  }
+  };
 </script>
 
 <style>
@@ -261,19 +284,19 @@
   }
 
   button.number-button {
-    border-radius: .25em;
+    border-radius: 0.25em;
     font-size: 3em;
     height: 2em;
-    margin: .1em;
+    margin: 0.1em;
     text-align: center;
     width: 2em;
   }
 
   #clear-button {
-    border-radius: .25em;
+    border-radius: 0.25em;
     font-size: 3em;
     height: 2em;
-    margin: .1em;
+    margin: 0.1em;
     text-align: center;
     width: 4.2em;
   }
@@ -300,7 +323,7 @@
 
   .slide-enter {
     transform: translate(-100%, 0);
-    transition: opacity .5s;
+    transition: opacity 0.5s;
   }
 
   .slide-leave-to {
@@ -318,7 +341,7 @@
 
   .slide-right-enter {
     transform: translate(100%, 0);
-    transition: opacity .5s;
+    transition: opacity 0.5s;
   }
 
   .slide-right-leave-to {

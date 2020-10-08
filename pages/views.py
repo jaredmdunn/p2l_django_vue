@@ -6,19 +6,25 @@ from .forms import ContactUsForm
 
 
 class HomePageView(TemplateView):
+    """The homepage view"""
     template_name = 'pages/homepage.html'
 
 
 class AboutUsView(TemplateView):
+    """The about us view"""
     template_name = 'pages/about.html'
 
 
 class ContactUsView(FormView):
+    """The contact us form view"""
     template_name = 'pages/contact.html'
     form_class = ContactUsForm
     success_url = reverse_lazy('pages:thanks')
 
     def form_valid(self, form):
+        """Validates the contact us form data.
+        If it is valid, sends an email to the admin with the form data.
+        """
         data = form.cleaned_data
         first_name = data['first_name']
         last_name = data['last_name']
@@ -38,4 +44,5 @@ class ContactUsView(FormView):
 
 
 class ContactUsThanksView(TemplateView):
+    """The success page view for submitting the contact us form"""
     template_name = 'pages/thanks.html'
