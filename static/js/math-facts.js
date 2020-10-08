@@ -1,39 +1,75 @@
+/**
+ * Generates a random integer between low and high
+ * @param {number} low - the lowest number inclusive
+ * @param {number} high - the highest number exclusive
+ * @return {number} - a random integer
+ */
 function randInt(low, high) {
   const rndDec = Math.random();
   const rndInt = Math.floor(rndDec * (high - low + 1) + low);
   return rndInt;
 }
 
+/**
+ * Generates a problem based on the selected operation and max number
+ * @param {string} operation 
+ * @param {number} maxNum 
+ */
 function generateProblem(operation, maxNum) {
+  // initialize q (question) and a (answer)
   let q, a;
+  // set maxNum to 20 if it is less than or equal to 0
   if (maxNum <= 0) maxNum = 20;
+  // if operation is "addition"
+  // generate a problem with addition
   if (operation === "addition") {
     const num1 = randInt(0, maxNum);
     const num2 = randInt(0, maxNum);
     q = String(num1) + " + " + String(num2);
     a = num1 + num2;
+    // if operation is "subtraction"
+    // generate a problem with subtraction
   } else if (operation === "subtraction") {
     const num1 = randInt(0, maxNum);
     const num2 = randInt(num1, maxNum);
     q = String(num2) + " - " + String(num1);
     a = num2 - num1;
+    // if operation is "multiplication"
+    // generate a problem with multiplication
   } else if (operation === "multiplication") {
     const num1 = randInt(0, maxNum);
     const num2 = randInt(0, maxNum);
     q = String(num1) + " x " + String(num2);
     a = num1 * num2;
+    // if operation is "division"
+    // generate a problem with division
   } else if (operation === "division") {
     const num1 = randInt(1, maxNum);
     const num2 = randInt(0, maxNum);
     const num3 = num1 * num2;
     q = String(num3) + " / " + String(num1);
-    a = num2; 
+    a = num2;
   }
-  return {"q" : q, "a" : a};
+  // return a JSON object with the question and answer
+  return {
+    "q": q,
+    "a": a
+  };
 }
 
+/**
+ * Sends an Ajax request to the server to save the user's score
+ * and returns a success message if successful
+ * @param {string} operation - the operation selected by the user
+ * @param {*} maxNum - the max number selected by the user
+ * @param {*} score - the user's final score
+ */
 function saveScore(operation, maxNum, score) {
+  // TODO: Discuss whether or not using the csrf input element is best practice for Ajax calls
+  // Also discuss about getting the AjaxURL 
   const csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
+  // Create a JSON object that stores information 
+  // on the user's parameters and score for the game
   const data = {
     "parameters": {
       "operation": operation,
@@ -41,15 +77,17 @@ function saveScore(operation, maxNum, score) {
     },
     "score": score,
   }
+  // call fetch to send the data to the server
   fetch(ajaxURL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": csrfToken
-    },
-    body: JSON.stringify(data),
-  })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken
+      },
+      body: JSON.stringify(data),
+    })
     .then(response => response.json())
+    // if successful, set the ajax-msg output value to the return message
     .then(data => {
       document.getElementById("ajax-msg").value = data.msg;
     });
@@ -80,22 +118,32 @@ window.addEventListener("load", (e) => {
   const finalScore = document.getElementById("final-score");
   const playAgain = document.getElementById("btn-play-again");
 
+  // the game time
   const PLAYTIME = 30;
   playTimeSpan.innerHTML = PLAYTIME;
 
+  // initialize operation and maxNum to the default values of the selects
   let operation = operationSelect.value;
   let maxNum = maxNumInput.value;
 
+  // when the go button is clicked,
+  // set operation and maxNum to the values selected by the user
+  // and call play()
   go.addEventListener("click", (e) => {
     operation = operationSelect.value;
     maxNum = maxNumInput.value;
     play(operation, maxNum, PLAYTIME);
   });
 
+  // when playAgain is clicked,
+  // call start()
   playAgain.addEventListener("click", (e) => {
     start();
   });
 
+  // add an event listener to each button in the number pad
+  // so that when they are clicked they put the number 
+  // into the solution input (except clear which clears the input)
   for (btn of numPadButtons) {
     btn.addEventListener("click", (e) => {
       const btnClicked = e.target;
@@ -104,16 +152,12 @@ window.addEventListener("load", (e) => {
       } else {
         solutionInput.value += btnClicked.innerHTML;
       }
-
-      if (Number(solutionInput.value) === problem.a) {
-        problem = generateProblem(operation, maxNum);
-        problemDisplay.innerHTML = problem.q;
-        solutionInput.value = "";
-        scoreOutput.innerHTML = String(Number(scoreOutput.innerHTML) + 1);
-      }
     });
   }
 
+  /**
+   * Display elements for the start screen, hides others
+   */
   function start() {
     startSection.style.display = "block";
     playSection.style.display = "none";
@@ -127,8 +171,13 @@ window.addEventListener("load", (e) => {
     scoreOutput.innerHTML = "0";
   }
 
+  // call start() when the window loads
   start();
 
+  /**
+   * Displays elements for the time up screen, hides others
+   * @param {number} score - the score the user got on the game
+   */
   function timeUp(score) {
     problemDisplay.style.display = "none";
     solutionInput.style.display = "none";
@@ -139,6 +188,17 @@ window.addEventListener("load", (e) => {
     finalScore.innerHTML = score;
   }
 
+  /**
+   * Displays elements for the play screen, hides others.
+   * Also, sets timer, sets first problem, 
+   * adds event listeners to button pad clicks 
+   * and changes to the solution input so that 
+   * if the input value is the solution a new question is generated
+   * 
+   * @param {string} operation - the operation selected by the user
+   * @param {number} maxNum - the max number selected by the user
+   * @param {number} time - the game time
+   */
   function play(operation, maxNum, time) {
     playSection.style.display = "block";
     startSection.style.display = "none";
@@ -161,7 +221,7 @@ window.addEventListener("load", (e) => {
 
     for (btn of numPadButtons) {
       btn.addEventListener("click", (e) => {
-        if (Number(solutionInput.value) === problem.a) {
+        if (solutionInput.value === String(problem.a)) {
           problem = generateProblem(operation, maxNum);
           problemDisplay.innerHTML = problem.q;
           solutionInput.value = "";
@@ -171,7 +231,7 @@ window.addEventListener("load", (e) => {
     }
 
     solutionInput.addEventListener("input", (e) => {
-      if (Number(solutionInput.value) === problem.a) {
+      if (solutionInput.value === String(problem.a)) {
         problem = generateProblem(operation, maxNum);
         problemDisplay.innerHTML = problem.q;
         solutionInput.value = "";
