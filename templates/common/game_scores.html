@@ -1,20 +1,3 @@
-<!-- <div>
-  <form>
-    {% for param in game_params.all %}
-      <label for="{{ param.slug }}">{{ param.parameter }}</label>
-          <select name="{{ param.slug }}" id="{{ param.slug }}">
-            {% for key, value in param.values.items %}
-              <option value="{{ key }}"
-                {% if value == param.default_value %}
-                  selected
-                {% endif %}>{{ value }}</option>
-            {% endfor %}
-          </select>
-      </label>
-    {% endfor %}
-    <button type="submit">Submit</button>
-  </form>
-</div> -->
 <table>
   <thead>
     <th>Place</th>
