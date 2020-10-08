@@ -50,8 +50,8 @@ class ReviewForm(forms.ModelForm):
         fields = ['review', 'anonymous']
         widgets = {
             'review': forms.Textarea(
-                attrs={'cols': 50, 'rows': 5,
-                       'autofocus': True, 'placeholder': 'Hello'}
+                attrs={'cols': 50, 'rows': 5, 'autofocus': True,
+                       'placeholder': 'Write your review!'}
             )  # cols may not do anything
         }
         labels = {

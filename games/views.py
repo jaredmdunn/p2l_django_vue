@@ -9,31 +9,53 @@ from .models import Game, GameScore, Parameter, ParameterValue
 
 
 class AnagramGameView(LoginRequiredMixin, TemplateView):
+    """View for the Anagram Hunt game"""
     template_name = 'games/anagram-hunt.html'
 
 
 class GameDetailView(LoginRequiredMixin, DetailView):
+    """Detail view as a template to display different games; not used for Vue games"""
     model = Game
 
 
 class ScoreListView(ListView):
+    """List view to display scores on a leaderboard
+
+    Used in urls of games and users as leaderboards and my-scores pages respectively, with
+    my-scores being filtered to only show scores of the current user
+    """
     model = Game
     template_name = 'games/score_list.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
+        """Adds context data to display the leaderboard
+
+        Context:
+            active_game: The game tab that is currently selected
+            current_user: The logged-in user
+            game_params: All of the game parameters for the active game
+            params: The parameters by which to filter, set to defaults if not passed in
+            tab_path: the url path to use on the game tabs, such it does not switch 
+                between my-scores and leaderboards
+            scores: a queryset of GameScore objects filtered and in descending order
+
+        Returns:
+            dict: A dictionary of context to be passed to the template
+        """
         context = super().get_context_data(**kwargs)
 
+        # set active game and current user
         active_game = Game.objects.prefetch_related(
             'parameters').get(slug=self.kwargs['slug'])
         context['active_game'] = active_game
         context['current_user'] = self.request.user
 
+        # set the game parameters
         game_params = active_game.parameters
         context['game_params'] = game_params.all()
 
-        params = self.request.GET.copy()
-
         # sets any blank parameter value to default
+        params = self.request.GET.copy()
         for gp in game_params.all():
             if gp.slug not in params or not params[gp.slug]:
                 params[gp.slug] = active_game.parameter_defaults[gp.slug]
@@ -66,15 +88,19 @@ class ScoreListView(ListView):
 
         return context
 
-    # def get_queryset(self):
-    #     qs = GameScore.objects.all()
-    #     if '/my-scores' in self.request.path_info:
-    #         qs = qs.filter(user=self.request.user)
-    #     return qs.prefetch_related('game', 'parameter')
-
 
 @login_required
-def save_score(request, slug):
+def save_score(request, slug: str):
+    """Saves the score and returns a customized message based on whether a high score was achieved
+
+    Args:
+        request (HttpRequest): A request from the math facts saveScore function
+        slug (str): The slug of the game
+
+    Returns:
+        JsonResponse: response containing the message to display to the user about score saving
+    """
+    # get data from the request
     user = request.user
     game = Game.objects.get(slug=slug)
 
@@ -91,19 +117,18 @@ def save_score(request, slug):
     if user.is_anonymous:
         msg = 'Sorry, you have to be logged in to save your score.'
     else:
-        # if user has a previous score for that game and those parameter settings,
-        # message should be `you beat your previous high score on this setting,
-        # or "you can do better, you high score is ___"`
-
+        # create new score
         new_score = GameScore(user=user, game=game, score=score)
         new_score.save()
 
-        for key, value in param_data.items():
-            param = Parameter.objects.get(slug=key)
+        # add parameter values to the score
+        for param_name, value in param_data.items():
+            param = Parameter.objects.get(slug=param_name)
             param_value = param.values.get(
                 value__iexact=value, parameter=param)
             new_score.parameter_values.add(param_value)
 
+        # customize message based on whether a high score is achieved
         if new_score.is_high_score:
             msg = 'You beat the high score!'
         elif new_score.is_user_high_score:
@@ -115,27 +140,3 @@ def save_score(request, slug):
         'msg': msg,
     }
     return JsonResponse(response)
-
-
-# class ScoreListView(ListView):
-#     model = Game
-#     template_name = 'games/score_list.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-
-#         # order_fields, order_key, direction = self.get_order_settings()
-
-#         context['active_game'] = Game.objects.get(slug=self.kwargs['slug'])
-#         context['current_user'] = self.request.user
-
-#         return context
-
-#     def get_queryset(self):
-#     #     ordering = self.get_ordering()
-#         qs = GameScore.objects.all()
-
-#     #     if '/my-scores' in self.request.path_info:
-#     #         qs = qs.filter(user=self.request.user)
-
-#         return qs
