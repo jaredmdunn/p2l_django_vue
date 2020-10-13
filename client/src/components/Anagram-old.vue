@@ -35,7 +35,7 @@
               </div>
             </div>
             <div>
-              <Word :word="currentWordQuestion" />
+              <Word :word="wordQuestion()" />
             </div>
             <div class="row">
               <div class="col">
@@ -48,7 +48,7 @@
               </div>
             </div>
             <ol>
-              <li v-for="item in finishedWords[this.answerSets.indexOf(this.currentAnswerSet)]" :key="item">
+              <li v-for="item in finishedWords[answerSetIndex]" :key="item">
                 {{ item }}
               </li>
             </ol>
@@ -69,7 +69,7 @@
     anagrams
   } from "../helpers/anagrams";
   import {
-    shuffle
+    getRandomInt
   } from "../helpers/helpers";
 
   export default {
@@ -83,105 +83,101 @@
     },
     data: function() {
       return {
-        ajaxMsg: "",
-        ajaxURL: "/games/anagram-hunt/save-score/",
-        anagramsCopy: JSON.parse(JSON.stringify(anagrams)),
-        answered: false, // only used in handleKeyUp and is recomputed every time
-        answerSets: [],
+        wordLength: "5",
+        screen: "config",
         buttons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
-        // gets the csrf token from the csrf cookie that is automatically set by Django
+        input: "",
+        answered: false, // only used in handleKeyUp and is recomputed every time
+        score: 0,
+        gameLength: 2,
+        timeLeft: 0,
+        answerSetIndex: 0,
+        pastAnswerSetIndices: [],
+        finishedAnswerSetIndices: [],
+        finishedWords: {}, // answerSetIndex to array of words
+        pastWordQuestions: {}, // answerSetIndex to wordQuestion
+        ajaxURL: "/games/anagram-hunt/save-score/",
         csrfToken: document.cookie
           .split("; ")
           .find((row) => row.startsWith("csrftoken"))
           .split("=")[1],
-        currentAnswerSet: [],
-        currentWordQuestion: '',
-        finishedWords: [],
-        gameLength: 60,
-        input: "",
-        score: 0,
-        screen: "config",
-        timeLeft: 0,
-        wordLength: "5",
-        wordQuestions: [],
+        ajaxMsg: "",
       };
     },
     methods: {
-      /**
-       * Sets the screen display to the config page before playing.
-       */
       config() {
         this.screen = "config";
       },
-      /**
-       * Begins the game by setting the screen display to the play page and 
-       * starting the timer.
-       */
       play() {
         this.screen = "play";
-        shuffle(this.anagramsCopy[this.wordLength]) // randomize order of answer sets
         this.startTimer();
       },
-      /**
-       * Restarts the game by resetting stored data and starting the timer.
-       */
       restart() {
-        this.anagramsCopy = JSON.parse(JSON.stringify(anagrams));
         this.input = "";
         this.answered = false;
         this.score = 0;
-        this.answerSets = [];
-        this.finishedWords = [];
-        this.wordQuestions = [];
+        this.pastAnswerSetIndices = [];
+        this.finishedAnswerSetIndices = [];
+        this.finishedWords = {};
+        this.pastWordQuestions = {};
         this.startTimer();
       },
-      /**
-       * Resets the input and answered data values after the user gets a 
-       * correct anagram.
-       */
       correctWord() {
         this.input = "";
         this.answered = false;
       },
-      /**
-       * Resets the input and answered data values and calls another function to
-       * get a new answer set and word question.
-       */
       newWord() {
         this.input = "";
         this.answered = false;
-        this.setAnswerSetAndWordQuestion();
-      },
-      /**
-       * Checks if the user has inputted a valid anagram for the current word
-       * question.
-       * @param {string} userAnswer - the user's inputted answer
-       * @return {boolean} - true if userAnswer is a valid answer, and false
-       * if not
-       */
-      checkAnswer(userAnswer) {
-        if (!userAnswer) {
-          return false; // user hasn't answered
-        }
-        if (this.currentAnswerSet.includes(userAnswer)) {
-          let answerIndex = this.currentAnswerSet.indexOf(userAnswer);
-          this.currentAnswerSet.splice(answerIndex, 1); // remove anagram from answer set
-          if (this.finishedWords[this.answerSets.indexOf(this.currentAnswerSet)]) {
-            this.finishedWords[this.answerSets.indexOf(this.currentAnswerSet)].push(userAnswer);
-          } else {
-            this.finishedWords[this.answerSets.indexOf(this.currentAnswerSet)] = [userAnswer];
+        const maxIndex = this.setLength - 1;
+        if (this.pastAnswerSetIndices.length === this.setLength) {
+          // if all words have been seen
+          let newIndex =
+            this.pastAnswerSetIndices.findIndex(
+              (val) => val === this.answerSetIndex
+            ) + 1; // advance to next word in list
+
+          // while new index is in finishedAnswerSetIndices (or beyond bounds), cycle newIndex
+          while (
+            this.finishedAnswerSetIndices.includes(
+              this.pastAnswerSetIndices[newIndex]
+            ) ||
+            newIndex > maxIndex
+          ) {
+            newIndex++;
+            if (newIndex > maxIndex) {
+              newIndex = 0; // reset index if it went past length of set
+            }
           }
-          return true;
+          this.answerSetIndex = this.pastAnswerSetIndices[newIndex];
+        } else {
+          this.setAnswerSetIndex();
         }
       },
-      /**
-       * Starts the timer and adds an event listener to monitor if the user
-       * tries to submit an answer.
-       */
+      checkAnswer(userAnswer, wordQuestion) {
+        // switch else cases to separate if statements
+        if (!userAnswer) {
+          return false; // User hasn't answered
+        } else if (userAnswer === wordQuestion) {
+          return false; // same as prompted word
+        } else if (this.answerSetIndex in this.finishedWords) {
+          if (this.finishedWords[this.answerSetIndex].includes(userAnswer)) {
+            return false;
+          } else if (this.answerSet.includes(userAnswer)) {
+            this.finishedWords[this.answerSetIndex].push(userAnswer);
+            return true;
+          }
+        } else {
+          if (this.answerSet.includes(userAnswer)) {
+            this.finishedWords[this.answerSetIndex] = [userAnswer];
+            return true;
+          }
+        }
+      },
       startTimer() {
         window.addEventListener("keyup", this.handleKeyUp);
         this.timeLeft = this.gameLength;
-        this.setAnswerSetAndWordQuestion();
+        this.setAnswerSetIndex();
         if (this.timeLeft) {
           this.timer = setInterval(() => {
             this.timeLeft--;
@@ -193,23 +189,24 @@
           }, 1000);
         }
       },
-      /**
-       * Monitors the user's keyboard input; if the user presses the Enter key,
-       * checks for a valid answer and then advances to the next word and 
-       * increases the score appropriately.
-       * @param {event} e - the event generated by the user pressing a key
-       */
       handleKeyUp(e) {
         e.preventDefault(); // prevent the normal behavior of the key
-        if (e.keyCode === 13) { // Enter
-          this.answered = this.checkAnswer(this.input.trim());
+        if (e.keyCode === 13) {
+          // Enter
+          this.answered = this.checkAnswer(
+            this.input.trim(),
+            this.wordQuestion()
+          );
           if (this.answered) {
-            if (!this.currentAnswerSet.length) { // when word is finished
-              let answerSetIndex = this.answerSets.indexOf(this.currentAnswerSet);
-              this.answerSets.splice(answerSetIndex, 1); // remove answer set from answer sets list
-              this.wordQuestions.splice(answerSetIndex, 1); // remove word question from word questions list
-              this.finishedWords.splice(answerSetIndex, 1);
-              if (!this.answerSets.length && !this.anagramsCopy[this.wordLength].length) { // when finished with all words
+            if (
+              this.finishedWords[this.answerSetIndex].length ==
+              this.answerSet.length - 1
+            ) {
+              // when word is finished
+              // this.pastAnswerSetIndices.remove
+              this.finishedAnswerSetIndices.push(this.answerSetIndex);
+              if (this.finishedAnswerSetIndices.length === this.setLength) {
+                // when finished with all words
                 this.timeLeft = 1;
               } else {
                 setTimeout(this.newWord(), 300);
@@ -221,35 +218,25 @@
           }
         }
       },
-      /**
-       * Sets the answer set and word question for the user when the game
-       * starts, when the user finishes an answer set, and when the user clicks
-       * the new word button. 
-       */
-      setAnswerSetAndWordQuestion() {
-        if (this.anagramsCopy[this.wordLength].length) {
-          let newAnswerSet = shuffle(this.anagramsCopy[this.wordLength].pop());
-          this.answerSets.push(newAnswerSet);
-          this.currentAnswerSet = newAnswerSet;
-
-          let newWordQuestion = newAnswerSet.pop();
-          this.wordQuestions.push(newWordQuestion);
-          this.currentWordQuestion = newWordQuestion;
+      setAnswerSetIndex() {
+        // computes random index for set of anagrams with given word length
+        let newIndex = getRandomInt(this.setLength);
+        while (this.pastAnswerSetIndices.includes(newIndex)) {
+          newIndex = getRandomInt(this.setLength);
+        }
+        this.answerSetIndex = newIndex;
+        this.pastAnswerSetIndices.push(this.answerSetIndex);
+      },
+      wordQuestion() {
+        if (this.answerSetIndex in this.pastWordQuestions) {
+          return this.pastWordQuestions[this.answerSetIndex];
         } else {
-          let oldIndex = this.answerSets.indexOf(this.currentAnswerSet);
-          let newIndex = (oldIndex + 1) % this.answerSets.length;
-
-          this.currentAnswerSet = this.answerSets[newIndex];
-          this.currentWordQuestion = this.wordQuestions[newIndex];
+          const answerIndex = getRandomInt(this.answerSet.length);
+          let newWordQuestion = this.answerSet[answerIndex];
+          this.pastWordQuestions[this.answerSetIndex] = newWordQuestion;
+          return newWordQuestion;
         }
       },
-      /**
-       * Sends the user's score and wordLength param to the server. 
-       * Then sets the ajaxMsg div to the reponse message.
-       * 
-       * @param {number} wordLength - the length of anagram the user chose
-       * @param {number} score - the user's final score
-       */
       saveScore(wordLength, score) {
         const data = {
           parameters: {
@@ -272,13 +259,19 @@
       },
     },
     computed: {
-      // the possible word lengths
+      setLength: function() {
+        return anagrams[this.wordLength].length;
+      },
       numbers: function() {
         let numbers = [];
         for (let number = 5; number <= 8; number++) {
           numbers.push([number, number]);
         }
         return numbers;
+      },
+      answerSet: function() {
+        const answerSet = anagrams[this.wordLength][this.answerSetIndex];
+        return answerSet;
       },
     },
   };
