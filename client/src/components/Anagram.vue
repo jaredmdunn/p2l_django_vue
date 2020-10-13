@@ -14,7 +14,7 @@
             <div class="huge">{{ score }}</div>
             <strong class="big">Anagrams</strong>
             <div id="ajax-msg">{{ ajaxMsg }}</div>
-            <button class="btn btn-primary form-control m-1" @click="restart()">
+            <button class="btn btn-primary form-control m-1" @click="play()">
               Play Again with Same Settings
             </button>
             <button class="btn btn-secondary form-control m-1" @click="config()">
@@ -119,13 +119,14 @@
        */
       play() {
         this.screen = "play";
+        this.reset();
         shuffle(this.anagramsCopy[this.wordLength]) // randomize order of answer sets
         this.startTimer();
       },
       /**
-       * Restarts the game by resetting stored data and starting the timer.
+       * Resets stored data to play another round.
        */
-      restart() {
+      reset() {
         this.anagramsCopy = JSON.parse(JSON.stringify(anagrams));
         this.input = "";
         this.answered = false;
@@ -133,7 +134,6 @@
         this.answerSets = [];
         this.finishedWords = [];
         this.wordQuestions = [];
-        this.startTimer();
       },
       /**
        * Resets the input and answered data values after the user gets a 
