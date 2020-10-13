@@ -61,12 +61,12 @@ function generateProblem(operation, maxNum) {
  * Sends an Ajax request to the server to save the user's score
  * and returns a success message if successful
  * @param {string} operation - the operation selected by the user
- * @param {*} maxNum - the max number selected by the user
- * @param {*} score - the user's final score
+ * @param {number} maxNum - the max number selected by the user
+ * @param {number} score - the user's final score
  */
 function saveScore(operation, maxNum, score) {
   // TODO: Discuss whether or not using the csrf input element is best practice for Ajax calls
-  // Also discuss about getting the AjaxURL 
+  // Also discuss about getting the AjaxURL from the slug in the url?
   const csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
   // Create a JSON object that stores information 
   // on the user's parameters and score for the game
