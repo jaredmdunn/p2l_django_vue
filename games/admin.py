@@ -17,15 +17,7 @@ class GameAdmin(admin.ModelAdmin):
     inlines = [ParameterInline]
 
     def get_readonly_fields(self, request, obj=None) -> tuple:
-        """Adds slug as a readonly field
-
-        Args:
-            request (HTTPRequest): A request containing the querystring
-            obj (Game, optional): The game being examined. Defaults to None.
-
-        Returns:
-            tuple: of the readonly fields, including slug if applicable
-        """
+        """Adds slug as a readonly field to change form."""
         if obj:
             return('slug',)
         return ()
