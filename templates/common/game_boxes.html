@@ -1,20 +1,18 @@
-{% if games.all %}
-    <div class="container mb-5 mx-auto col-lg-8">
-      <div class="row">
-        {% for game in games %}
-          <div class="card col-sm p-0 m-1">
-            <div class="card-body">
-              <h5 class="card-title text-center">{{ game.game }}</h5>
-              <p class="card-text text-center">{{ game.description }}</p>
-            </div>
-            <div class="card-footer d-flex justify-content-evenly">
-              <a href="{% url 'games:game' game.slug %}" class="btn btn-success m-1">Play now!</a>
-              <a href="{% url 'games:leaderboards' game.slug %}" class="btn btn-primary m-1">See the high scores!</a>
-            </div>
-          </div>
-        {% endfor %}
+<div class="container mb-5 mx-auto col-lg-8">
+  <div class="row">
+    {% for game in games %}
+      <div class="card col-sm p-0 m-1">
+        <div class="card-body">
+          <h5 class="card-title text-center">{{ game.game }}</h5>
+          <p class="card-text text-center">{{ game.description }}</p>
+        </div>
+        <div class="card-footer d-flex justify-content-evenly">
+          <a href="{% url 'games:game' game.slug %}" class="btn btn-success m-1">Play now!</a>
+          <a href="{% url 'games:leaderboards' game.slug %}" class="btn btn-primary m-1">See the high scores!</a>
+        </div>
       </div>
-    </div>
-{% else %}
-  <p>No games exist yet.</p>
-{% endif %}
+    {% empty %}
+      <p>No games exist yet.</p>
+    {% endfor %}
+  </div>
+</div>

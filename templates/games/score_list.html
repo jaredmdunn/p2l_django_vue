@@ -2,14 +2,23 @@
 {% load common_filters %}
 {% load common_tags %}
 
-{% block title %}Leaderboards{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block main %}
-  {% if is_my_scores %}
-    <h1>My Scores</h1>
-    {% show_stats current_user active_game %}
-  {% else %}
-    <h1>Leaderboards</h1>
+  <h1>{{ page_title }}</h1>
+  {% if user_stats %}
+    <div class="container-fluid" id="stats-container">
+      <div class="row p-2" id="stats-box">
+        <div class="border rounded col-auto ">
+          <h3>Stats:</h3>
+          <ul>
+            {% for stat_name, value in user_stats.items %}
+              <li>{{ stat_name }}: {{ value }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
   {% endif %}
 
   <ul class="nav nav-tabs">

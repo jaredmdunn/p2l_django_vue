@@ -16,9 +16,17 @@
               Games
             </a>
             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="games">
-              {% show_leaderboard_link 'leaderboards' %}
+              <li><a class="dropdown-item" href="{% url 'games:leaderboards' %}">Leaderboards</a></li>
               <li><hr class="dropdown-divider m-0"></li>
-              {% show_game_links %}
+
+              <li><a class="dropdown-item" href="{% url 'games:game' 'math-facts' %}">Math Facts</a></li>
+              <li><a class="dropdown-item" href="{% url 'games:game' 'anagram-hunt' %}">Anagram Hunt</a></li>
+              {% comment "This would be a better way to do it, but requires knowledge of context_processors"  %}
+              {% for game in all_games %}
+                <li><a class="dropdown-item" href="{% url 'games:game' game.slug %}">{{ game.game }}</a></li>
+              {% endfor %}
+              {% endcomment %}
+              
             </ul>
           </li>
           <li class="nav-item">
@@ -31,7 +39,7 @@
               </a>
               <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="me">
                 <li><a class="dropdown-item" href="{% url 'users:my-account' %}">My Account</a></li>
-                {% show_leaderboard_link 'my-scores' %}
+                <li><a class="dropdown-item" href="{% url 'users:my-scores' %}">My Scores</a></li>
                 <li><a class="dropdown-item" href="{% url 'users:create-review' %}">Leave a Review</a></li>
                 <li><hr class="dropdown-divider m-0"></li>
                 <li>

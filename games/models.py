@@ -16,10 +16,15 @@ class Game(models.Model):
         game: the name of the game
         slug: a unique slug for the game
     """
+    class GameType(models.IntegerChoices):
+        VANILLA = 1
+        VUE = 2
+
     description = models.TextField(blank=True, null=True)
     game = models.CharField(max_length=100)
     slug = models.SlugField(max_length=50, unique=True,
                             null=False, editable=False)
+    type = models.PositiveSmallIntegerField(choices=GameType.choices, default=GameType.VANILLA)
 
     @property
     def parameter_defaults(self) -> dict:
@@ -33,10 +38,8 @@ class Game(models.Model):
         parameters = self.parameters
 
         for param in parameters.all():
-            if param.default_value:
-                param_value_dict[param.slug] = param.default_value.slug
-            else:
-                param_value_dict[param.slug] = param.values.all()[0].slug
+            default_param = param.default_value or param.values.first()
+            param_value_dict[param.slug] = default_param.slug
 
         return param_value_dict
 
@@ -64,7 +67,7 @@ class GameScore(models.Model):
         created: the date when the score was created
         game: a foreign key of the game
         parameter_values: a many to many field of parameter values
-        score: the points scores
+        score: the points scored
         user: a foreign key of the user
     """
     created = models.DateTimeField(auto_now_add=True)
@@ -76,36 +79,24 @@ class GameScore(models.Model):
     )
     score = models.PositiveIntegerField()
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-        related_name='game_scores'
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='game_scores'
     )
 
     @property
     def is_high_score(self) -> bool:
-        """Determines if the score is a new high score
-
-        Returns:
-            bool: true if the score is a new high score
-        """
-        return not self.__scores_with_same_param_settings().filter(score__gt=self.score).exists()
+        """Returns True if the score is a new high score. False, otherwise."""
+        return not self._scores_with_same_param_settings().filter(score__gt=self.score).exists()
 
     @property
     def is_user_high_score(self):
-        """Determines if the score is a new high score among the user's scores
-
-        Returns:
-            bool: true if the score is a new high score among the user's scores"""
-        return not self.__scores_with_same_param_settings() \
+        """Returns True if the score is a new high score among the user's scores."""
+        return not self._scores_with_same_param_settings() \
             .filter(score__gt=self.score, user=self.user).exists()
 
-    def __scores_with_same_param_settings(self):
-        """Filters the game scores with the same parameter settings
-
-        Returns:
-            QuerySet: game scores with the same parameter settings
-        """
+    def _scores_with_same_param_settings(self):
+        """Returns a QuerySet of game scores with the same parameter settings."""
         scores = GameScore.objects.filter(game=self.game)
-        for param_value in self.parameter_values.select_related('parameter').all():
+        for param_value in self.parameter_values.prefetch_related('parameter'):
             scores = scores.filter(
                 parameter_values__value=param_value.value,
                 parameter_values__parameter__slug=param_value.parameter.slug
@@ -142,7 +133,7 @@ class Parameter(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.parameter
+        return f'{self.game}: {self.parameter}'
 
 
 class ParameterValue(models.Model):
@@ -170,23 +161,23 @@ class ParameterValue(models.Model):
     def save(self, *args, **kwargs):
         """Overwrites save to generate unique slug and a sortable ordering name"""
         if not self.slug:
-            value = self.value
-            self.slug = unique_slug(value, type(self))
+            self.slug = unique_slug(self.value, type(self))
+
         if not self.ordering_name:
-            self.ordering_name = self.__generate_ordering_name()
+            self.ordering_name = self._generate_ordering_name()
+
         super().save(*args, **kwargs)
 
-    def __generate_ordering_name(self):
+    def _generate_ordering_name(self):
         """Generates ordering name such that numbers will be 9 digits long with leading zeroes"""
         if self.value.isdigit():
             value = int(self.value)
-            value = f'{value:09d}'
-        else:
-            value = self.value
-        return value
+            return f'{value:09d}'
+
+        return self.value
 
     def __str__(self):
-        return self.parameter.parameter + ': ' + self.value
+        return f'{self.parameter.parameter}: {self.value}'
 
     class Meta:
         ordering = ['parameter', 'ordering_name']

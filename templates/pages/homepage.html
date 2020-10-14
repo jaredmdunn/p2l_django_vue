@@ -5,4 +5,60 @@
 {% block main %}
   {% show_featured_reviews user %}
   {% show_game_boxes %}
+  {% comment "This would be a better way to do it, but requires knowledge of context_processors" %}
+  <div class="row align-items-center">
+    <div id="featured-reviews" class="carousel slide mx-auto col-6" data-ride="carousel" data-interval="3000">
+      <div class="carousel-inner review-inner mx-auto row align-items-center">
+        {% if featured_reviews %}
+          <!-- Display reviews -->
+          {% for review in featured_reviews %}
+            {% if review == featured_reviews.first %}
+              <div class="carousel-item review-item active">
+                <p class="text-center">{{ review|linebreaksbr }}</p>
+              </div>
+            {% else %}
+              <div class="carousel-item review-item">
+                <p class="text-center">{{ review|linebreaksbr }}</p>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <!-- No reviews yet -->
+          <div class="carousel-item review-item active">
+            <p class="text-center">
+              {% if user.is_authenticated %}
+                Be the first to leave a
+                <a href="{% url 'users:create-review' %}">review</a>!
+              {% else %}
+                <!-- Redirect to game once functionality is available -->
+                <a href="{% url 'account_login' %}">Log in</a> or <a href="{% url 'account_signup' %}">create an account</a>, play some games,
+                and be the first to leave a review! 
+              {% endif %}
+            </p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="container mb-5 mx-auto col-lg-8">
+    <div class="row">
+      {% for game in all_games %}
+        <div class="card col-sm p-0 m-1">
+          <div class="card-body">
+            <h5 class="card-title text-center">{{ game.game }}</h5>
+            <p class="card-text text-center">{{ game.description }}</p>
+          </div>
+          <div class="card-footer d-flex justify-content-evenly">
+            <a href="{% url 'games:game' game.slug %}" class="btn btn-success m-1">Play now!</a>
+            <a href="{% url 'games:leaderboards' game.slug %}" class="btn btn-primary m-1">See the high scores!</a>
+          </div>
+        </div>
+      {% empty %}
+        <p>No games exist yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+  
+  {% endcomment %}
 {% endblock %}

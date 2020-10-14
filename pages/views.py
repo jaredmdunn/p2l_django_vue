@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
@@ -22,9 +23,7 @@ class ContactUsView(FormView):
     success_url = reverse_lazy('pages:thanks')
 
     def form_valid(self, form):
-        """Validates the contact us form data.
-        If it is valid, sends an email to the admin with the form data.
-        """
+        """Overrides form_valid to send an email to the admin with the form data."""
         data = form.cleaned_data
         first_name = data['first_name']
         last_name = data['last_name']
@@ -39,7 +38,7 @@ class ContactUsView(FormView):
             <p>Message:</p>
             <p>{ message }</p>'''
 
-        send_email('jdunn@webucator.com', subject, content)
+        send_email(settings.DEFAULT_FROM_EMAIL, subject, content)
         return super().form_valid(form)
 
 

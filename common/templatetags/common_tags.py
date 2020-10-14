@@ -22,14 +22,14 @@ def show_game_links():
     return {'games': games}
 
 
-@register.inclusion_tag('common/leaderboard_link.html')
-def show_leaderboard_link(page):
-    """Displays a link to the leaderboards or my scores page for first game in the database.
-    Takes a page name: 'leaderboards' or 'my-scores' to indicate which link to display
-    """
-    games = Game.objects.all()
-    first_game_slug = games.first().slug
-    return {'first_game_slug': first_game_slug, 'page': page}
+# @register.inclusion_tag('common/leaderboard_link.html')
+# def show_leaderboard_link(page):
+#     """Displays a link to the leaderboards or my scores page for first game in the database.
+#     Takes a page name: 'leaderboards' or 'my-scores' to indicate which link to display
+#     """
+#     games = Game.objects.all()
+#     first_game_slug = games.first().slug
+#     return {'first_game_slug': first_game_slug, 'page': page}
 
 
 @register.inclusion_tag('common/featured_reviews.html')
@@ -39,8 +39,8 @@ def show_featured_reviews(user):
     return {'featured_reviews': featured_reviews, 'user': user}
 
 
-@register.inclusion_tag('common/show_stats.html')
-def show_stats(user, game):
-    """Displays a users stats for a specific game"""
-    stats = user.stats(game)
-    return {'stats': stats}
+# @register.inclusion_tag('common/show_stats.html')
+# def show_stats(user, game):
+#     """Displays a users stats for a specific game"""
+#     stats = user.stats(game)
+#     return {'stats': stats}
