@@ -1,5 +1,14 @@
 /**
-* Shuffles array in place.
+ * Returns clone of obj.
+ * @param {*} obj object to clone
+ */
+export function clone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
+
+/**
+* Shuffles array in place. Fisher-Yates algorithm.
 * @param {Array} a items An array containing the items.
 */
 export function shuffle(a) {

@@ -14,10 +14,10 @@
             <div class="huge">{{ score }}</div>
             <strong class="big">Anagrams</strong>
             <div id="ajax-msg">{{ ajaxMsg }}</div>
-            <button class="btn btn-primary form-control m-1" @click="play()">
+            <button class="btn btn-primary form-control m-1" @click="play">
               Play Again with Same Settings
             </button>
-            <button class="btn btn-secondary form-control m-1" @click="config()">
+            <button class="btn btn-secondary form-control m-1" @click="config">
               Change Settings
             </button>
           </div>
@@ -69,7 +69,7 @@
     anagrams
   } from "../helpers/anagrams";
   import {
-    shuffle
+    clone, shuffle
   } from "../helpers/helpers";
 
   export default {
@@ -85,10 +85,9 @@
       return {
         ajaxMsg: "",
         ajaxURL: "/games/anagram-hunt/save-score/",
-        anagramsCopy: JSON.parse(JSON.stringify(anagrams)),
+        anagramsCopy: clone(anagrams),
         answered: false, // only used in handleKeyUp and is recomputed every time
         answerSets: [],
-        buttons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
         // gets the csrf token from the csrf cookie that is automatically set by Django
         csrfToken: document.cookie
           .split("; ")
@@ -127,7 +126,7 @@
        * Resets stored data to play another round.
        */
       reset() {
-        this.anagramsCopy = JSON.parse(JSON.stringify(anagrams));
+        this.anagramsCopy = clone(anagrams);
         this.input = "";
         this.answered = false;
         this.score = 0;
@@ -274,7 +273,7 @@
     computed: {
       // the possible word lengths
       numbers: function() {
-        let numbers = [];
+        const numbers = [];
         for (let number = 5; number <= 8; number++) {
           numbers.push([number, number]);
         }
@@ -334,8 +333,8 @@
   }
 
   .slide-leave-to {
-    transform: translate(100%, 0);
     opacity: 0;
+    transform: translate(100%, 0);
   }
 
   .slide-right-leave-active,
@@ -352,7 +351,7 @@
   }
 
   .slide-right-leave-to {
-    transform: translate(-100%, 0);
     opacity: 0;
+    transform: translate(-100%, 0);
   }
 </style>

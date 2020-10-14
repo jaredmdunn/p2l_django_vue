@@ -1,3 +1,11 @@
+/*
+  answerSets: anagrams[n]  (after shuffle)
+  answerSet: answerSets.pop()
+  word: answerSet.pop()
+  correctAnswers: answerSet (after pop)
+*/
+
+
 export const anagrams = {
   5: [
     [
