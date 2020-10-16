@@ -1,9 +1,11 @@
 import json
+from pathlib import Path
 
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
+from django.utils.html import mark_safe
 
 from common.utils.text import unique_slug
 
@@ -25,6 +27,11 @@ class Game(models.Model):
     slug = models.SlugField(max_length=50, unique=True,
                             null=False, editable=False)
     type = models.PositiveSmallIntegerField(choices=GameType.choices, default=GameType.VANILLA)
+
+    @property
+    def html(self):
+        p = settings.BASE_DIR / 'games/html' / f'{self.slug}.html'
+        return mark_safe(p.read_text(encoding='utf-8'))
 
     @property
     def parameter_defaults(self) -> dict:

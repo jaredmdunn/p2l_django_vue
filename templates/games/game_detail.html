@@ -47,13 +47,7 @@
         </div>
         <div id="play">
           <!-- Specific game html -->
-          {% with game_template='games/'|add:game.slug|add:'.html' %}
-            {% if game_template|template_exists %}
-              {% include game_template %}
-            {% else %}
-              <p class="mx-auto text-center">This game is currently under construction. Please try again later.</p>
-            {% endif %}
-          {% endwith %}
+         {{ game.html }}
           <!-- score -->
           <div id="scoreboard" class="m-auto text-center">
             <strong>Score:</strong>
