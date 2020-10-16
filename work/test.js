@@ -36,7 +36,14 @@ const origArray = [
 let anagramSets = JSON.parse(JSON.stringify(origArray));
 shuffle(anagramSets);
 for (const anagramSet of anagramSets) {
+  /* 
+    Change each anagramSet to use the following structure:
+    [wordToGuess, [unguessedWords], [guessedWords]]
+  */
   shuffle(anagramSet);
+  anagramSet[1] = anagramSet.slice(1); // anagrams to be guessed
+  anagramSet[2] = []; // guessed anagrams
+  anagramSet.length = 3; // truncate extra words
 }
 
 play(anagramSets);
@@ -53,7 +60,7 @@ function play(anagramSets, i=0) {
   // For each correct guess, remove one of the anagrams
   for (let i=0; i < r; i++) {
     // remove last word. In game, you could use removeItem to remove an item by value.
-    anagramSet.pop();
+    anagramSet[2].push(anagramSet[1].pop());
   }
   console.log(`ANAGRAMS LEFT: ${anagramSet}`);
   console.log('-----------------------');
@@ -61,9 +68,9 @@ function play(anagramSets, i=0) {
   // Record the number remaining before any are removed.
   let anagramSetsRemaining = anagramSets.length;
 
-  // remove empty anagramSets (when only the anchor word remains). This is an easy way of
+  // remove empty anagramSets (when the second element is an empty list). This is an easy way of
   // removing completed anagramSets without having to keep track of the index.
-  anagramSets = anagramSets.filter(el => el.length > 1);
+  anagramSets = anagramSets.filter(el => el[1].length);
 
   // If no anagram sets were removed, i should increment.
   // If a set was removed, i shouldn't change as every item after the removed
